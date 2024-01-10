@@ -1,0 +1,8 @@
+div
+	include /include/logo
+div(class="user-block text-center")
+	if currentAccount.avatar 
+		img(src="/upload/"+currentAccount.avatar alt="")
+	else 
+		img(src="/images/noname.svg" alt="")
+	div(class="text-center")= currentAccount.username

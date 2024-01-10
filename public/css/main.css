@@ -1,0 +1,41 @@
+:root {
+	--avatar-width: 80px;
+}
+
+html,
+body {
+	height: 100%;
+	overflow: auto;
+}
+
+body {
+	background-image: url(/images/fon.jpeg);
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+.btn.def-width {
+	min-width: 200px;
+}
+
+.no-underline {
+	text-decoration: none;
+}
+
+.user-block {
+	max-width: 200px;
+}
+
+.user-block img {
+	width: var(--avatar-width);
+	height: var(--avatar-width);
+	border-radius: var(--avatar-width);
+}
+
+td {
+	vertical-align: middle;
+}
+
+td>i {
+	background-color: yellow;
+}

@@ -1,0 +1,40 @@
+extends /layout/whideTreeRows
+
+block header 
+	include ../header
+
+block main
+	div(class="container")
+
+		div(class="d-flex align-items-center justify-content-between")
+			div(class="d-flex align-items-center gap-2")
+				a(href="/admin/drivers")
+					i(class="bi bi-arrow-left fs-3") 
+				h3(class="mb-0") Редактировать водителя
+
+		hr
+
+		form(action="/admin/drivers/edit" method="post")
+			input(type="hidden" name="id" value=driver.id)
+
+			div(class="mb-3")
+				label(class="form-label") Название
+				input(class="form-control" placeholder="Название" name="username" value=driver.username) 
+
+			div(class="mb-3")
+				label(class="form-label") Логин
+				input(class="form-control" placeholder="Логин" name="login" value=driver.login) 
+
+			div(class="mb-3")
+				label(class="form-label") Пароль
+				input(class="form-control" placeholder="Пароль" name="pass") 
+
+			div(class="mb-3")
+				label(class="form-label") Телефон
+				input(class="form-control" placeholder="Телефон" name="phone" required="" value=driver.phone) 
+
+			div(class="mb-3")
+				label(class="form-label") Город
+				input(class="form-control" placeholder="Город" name="city" required="" value=driver.city) 
+
+			button(class="btn btn-success" type="submit") Редактировать

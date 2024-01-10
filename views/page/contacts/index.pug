@@ -1,0 +1,14 @@
+extends /layout/treeRows
+
+block main
+	div(class="container text-center mb-5")
+		h1(class="mb-3") Связаться с нами
+		p
+			span Телефон: 
+			a(href="tel:"+phone class="no-underline")= coolPhone
+		p
+			span Почта: 
+			a(href="mailto:"+email class="no-underline")= email
+		p
+			span Telegram: 
+			a(href="https://t.me/"+telegram class="no-underline")= "@"+telegram

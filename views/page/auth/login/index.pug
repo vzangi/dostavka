@@ -1,0 +1,29 @@
+extends /layout/main
+
+block content 
+
+	div(class="d-flex flex-column justify-content-center h-100" style="max-width:300px;margin:auto")
+
+		div(class="flex-grow-0")
+			div(class="container text-center")
+
+				div(class="pb-4")
+					a(href="/")
+						img(src="/images/dostavka_100.png" alt="Сервис доставки")
+
+				form(action="/login" method="post") 
+					h1(class="h3 mb-3 fw-normal") Вход на сайт
+					div(class="form-floating")
+						input(type="text" class="form-control" name="login" id="login" placeholder="Ваш логин" required="")
+						label(for="login") Логин
+					div(class="form-floating")
+						input(type="password" class="form-control" name="password" id="password" placeholder="Ваш пароль" required="")
+						label(for="password") Пароль
+					button(class="w-100 mt-2 btn btn-lg btn-primary" type="submit") Вход
+
+				if message 
+					div(class="alert alert-danger mt-3" role="alert")
+						span= message
+
+				div(class="text-center mt-4")
+					small © #[span= (new Date()).getFullYear()]
