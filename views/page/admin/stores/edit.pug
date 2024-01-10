@@ -35,7 +35,12 @@ block main
 
 			div(class="mb-3")
 				label(class="form-label") Город
-				input(class="form-control" placeholder="Город" name="city" required="" value=store.city) 
+				select(class="form-control" name="cityId" required="")
+					each city in cities 
+						if city.id == store.cityId
+							option(value=city.id selected)= city.name
+						else
+							option(value=city.id)= city.name
 
 			div(class="mb-3")
 				label(class="form-label") Адрес

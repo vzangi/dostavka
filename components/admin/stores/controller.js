@@ -13,7 +13,8 @@ class AdminStoreController extends BaseController {
 
 	async addStoreForm(req, res) {
 		try {
-			res.render('page/admin/stores/add')
+			const data = await this.service.addStoreFormData()
+			res.render('page/admin/stores/add', data)
 		} catch (error) {
 			this.page404(res)
 		}
@@ -28,8 +29,6 @@ class AdminStoreController extends BaseController {
 			this.page404(res)
 		}
 	}
-
-
 
 	async editStoreForm(req, res) {
 		try {
@@ -61,9 +60,6 @@ class AdminStoreController extends BaseController {
 			this.page404(res)
 		}
 	}
-
-
-
 }
 
 module.exports = new AdminStoreController(Service)

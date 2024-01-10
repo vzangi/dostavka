@@ -1,22 +1,24 @@
-const { hash, compare } = require('bcrypt');
+const { hash, compare } = require('bcrypt')
 const { createToken } = require('../../unit/jwt')
 const User = require('../../models/User')
 const saltNumber = 10
 
 class AuthService {
 	async loginForm(login, password) {
-		console.log(login, password);
-
 		if (!login || !password) {
 			throw new Error('Нет необходимых данных')
 		}
 
 		const user = await User.findOne({
-			where: { login }
+			where: { login },
 		})
 
 		if (!user) {
 			throw new Error('Неверный логин или пароль')
+		}
+
+		if (!user.active) {
+			throw new Error('Пользователь заблокирован')
 		}
 
 		const match = await compare(password, user.password)
@@ -46,7 +48,7 @@ class AuthService {
 		const username = 'admin'
 
 		const hasAdmin = await User.findOne({
-			where: { username }
+			where: { username },
 		})
 
 		if (hasAdmin) {

@@ -35,7 +35,7 @@ block main
 							td(data-val=store.username)= store.username 
 							td(data-val=store.login)= store.login
 							td(data-val=store.phone)= store.phone
-							td(data-val=`${store.city}, ${store.address}` class="d-none d-lg-table-cell")= `${store.city}, ${store.address}`
+							td(data-val=`${store.city.name}, ${store.address}` class="d-none d-lg-table-cell")= `${store.city.name}, ${store.address}`
 							td 
 								div(class="d-flex justify-content-end gap-1")
 									a(href="/admin/stores/edit/"+store.id class="btn btn-sm btn-primary" title="Редактировать")

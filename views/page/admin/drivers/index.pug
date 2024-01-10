@@ -35,7 +35,7 @@ block main
 							td(data-val=driver.username)= driver.username 
 							td(data-val=driver.login)= driver.login
 							td(data-val=driver.phone)= driver.phone
-							td(data-val=driver.city class="d-none d-lg-table-cell")= driver.city
+							td(data-val=driver.city.name class="d-none d-lg-table-cell")= driver.city.name
 							td 
 								div(class="d-flex justify-content-end gap-1")
 									a(href="/admin/drivers/edit/"+driver.id class="btn btn-sm btn-primary" title="Редактировать")

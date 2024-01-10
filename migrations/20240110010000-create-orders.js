@@ -4,7 +4,7 @@
 module.exports = {
 	async up(queryInterface, Sequelize) {
 		await queryInterface.createTable(
-			'users',
+			'orders',
 			{
 				id: {
 					type: Sequelize.INTEGER,
@@ -12,21 +12,34 @@ module.exports = {
 					primaryKey: true,
 					autoIncrement: true,
 				},
-				username: {
-					type: Sequelize.STRING,
-					allowNull: false,
-					unique: true,
+				status: {
+					type: Sequelize.INTEGER,
+					defaultValue: 1,
 				},
-				login: {
+				clientPhone: {
 					type: Sequelize.STRING,
-					allowNull: false,
 				},
-				password: {
-					type: Sequelize.STRING,
-					allowNull: false,
+				summ: {
+					type: Sequelize.INTEGER,
 				},
-				phone: {
-					type: Sequelize.STRING,
+				storeId: {
+					type: Sequelize.INTEGER,
+					onDelete: 'CASCADE',
+					onUpdate: 'NO ACTION',
+					allowNull: false,
+					references: {
+						model: 'users',
+						key: 'id',
+					},
+				},
+				driverId: {
+					type: Sequelize.INTEGER,
+					onDelete: 'CASCADE',
+					onUpdate: 'NO ACTION',
+					references: {
+						model: 'users',
+						key: 'id',
+					},
 				},
 				cityId: {
 					type: Sequelize.INTEGER,
@@ -46,27 +59,8 @@ module.exports = {
 				longitude: {
 					type: Sequelize.DECIMAL(11, 6),
 				},
-				role: {
-					type: Sequelize.INTEGER,
-					defaultValue: 1,
-				},
-				telegramChatId: {
-					type: Sequelize.STRING,
-				},
-				avatar: {
-					type: Sequelize.STRING,
-				},
-				wallet: {
-					type: Sequelize.INTEGER,
-					defaultValue: 0,
-				},
-				active: {
-					type: Sequelize.BOOLEAN,
-					defaultValue: true,
-				},
-				online: {
-					type: Sequelize.BOOLEAN,
-					defaultValue: false,
+				comment: {
+					type: Sequelize.TEXT,
 				},
 				createdAt: {
 					type: Sequelize.DATE,
@@ -85,6 +79,6 @@ module.exports = {
 	},
 
 	async down(queryInterface, Sequelize) {
-		await queryInterface.dropTable('users')
+		await queryInterface.dropTable('orders')
 	},
 }

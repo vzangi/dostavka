@@ -1,14 +1,20 @@
 const { hash } = require('bcrypt')
 const Store = require('../../../models/User')
+const City = require('../../../models/City')
 const saltNumber = 10
 
 class AdminStoreService {
 	async main() {
 		const stores = await Store.findAll({
 			where: {
-				role: Store.roles.STORE
+				role: Store.roles.STORE,
 			},
-			order: [['id', 'desc']]
+			include: [
+				{
+					model: City,
+				},
+			],
+			order: [['id', 'desc']],
 		})
 
 		const data = {
@@ -18,11 +24,27 @@ class AdminStoreService {
 		return data
 	}
 
+	async addStoreFormData() {
+		const cities = await City.findAll()
+		const data = {
+			cities,
+		}
+		return data
+	}
+
 	async addStore(storeData) {
+		const {
+			username,
+			login,
+			pass,
+			phone,
+			cityId,
+			address,
+			latitude,
+			longitude,
+		} = storeData
 
-		const { username, login, pass, phone, city, address, latitude, longitude } = storeData
-
-		if (!username || !login || !pass || !city || !phone || !address) {
+		if (!username || !login || !pass || !cityId || !phone || !address) {
 			throw new Error('Нет необходимых данных')
 		}
 
@@ -33,7 +55,7 @@ class AdminStoreService {
 			login,
 			password,
 			phone,
-			city,
+			cityId,
 			address,
 			latitude,
 			longitude,
@@ -54,19 +76,30 @@ class AdminStoreService {
 			throw new Error('Магазин не найден')
 		}
 
+		const cities = await City.findAll()
 
 		const data = {
 			store,
+			cities,
 		}
 
 		return data
 	}
 
 	async editStore(storeData) {
+		const {
+			id,
+			username,
+			login,
+			pass,
+			phone,
+			cityId,
+			address,
+			longitude,
+			latitude,
+		} = storeData
 
-		const { id, username, login, pass, phone, city, address, longitude, latitude } = storeData
-
-		if (!username || !login || !id) {
+		if (!username || !login || !id || !phone || !cityId) {
 			throw new Error('Нет необходимых данных')
 		}
 
@@ -79,7 +112,7 @@ class AdminStoreService {
 		store.username = username
 		store.login = login
 		store.phone = phone
-		store.city = city
+		store.cityId = cityId
 		store.address = address
 		store.latitude = latitude
 		store.longitude = longitude

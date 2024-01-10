@@ -13,7 +13,9 @@ class AdminDriverController extends BaseController {
 
 	async addDriverForm(req, res) {
 		try {
-			res.render('page/admin/drivers/add')
+			const data = await this.service.addDriverFormData()
+			console.log(data)
+			res.render('page/admin/drivers/add', data)
 		} catch (error) {
 			this.page404(res)
 		}
@@ -28,8 +30,6 @@ class AdminDriverController extends BaseController {
 			this.page404(res)
 		}
 	}
-
-
 
 	async editDriverForm(req, res) {
 		try {
@@ -61,9 +61,6 @@ class AdminDriverController extends BaseController {
 			this.page404(res)
 		}
 	}
-
-
-
 }
 
 module.exports = new AdminDriverController(Service)

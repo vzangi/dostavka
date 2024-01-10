@@ -1,14 +1,20 @@
 const { hash } = require('bcrypt')
 const Driver = require('../../../models/User')
+const City = require('../../../models/City')
 const saltNumber = 10
 
 class AdminDriverService {
 	async main() {
 		const drivers = await Driver.findAll({
 			where: {
-				role: Driver.roles.DRIVER
+				role: Driver.roles.DRIVER,
 			},
-			order: [['id', 'desc']]
+			include: [
+				{
+					model: City,
+				},
+			],
+			order: [['id', 'desc']],
 		})
 
 		const data = {
@@ -18,11 +24,18 @@ class AdminDriverService {
 		return data
 	}
 
+	async addDriverFormData() {
+		const cities = await City.findAll()
+		const data = {
+			cities,
+		}
+		return data
+	}
+
 	async addDriver(driverData) {
+		const { username, login, pass, phone, cityId } = driverData
 
-		const { username, login, pass, phone, city } = driverData
-
-		if (!username || !login || !pass || !city || !phone) {
+		if (!username || !login || !pass || !cityId || !phone) {
 			throw new Error('Нет необходимых данных')
 		}
 
@@ -33,7 +46,7 @@ class AdminDriverService {
 			login,
 			password,
 			phone,
-			city,
+			cityId,
 			role: Driver.roles.DRIVER,
 		}
 
@@ -51,19 +64,20 @@ class AdminDriverService {
 			throw new Error('Водитель не найден')
 		}
 
+		const cities = await City.findAll()
 
 		const data = {
 			driver,
+			cities,
 		}
 
 		return data
 	}
 
 	async editDriver(driverData) {
+		const { id, username, login, pass, phone, cityId } = driverData
 
-		const { id, username, login, pass, phone, city } = driverData
-
-		if (!username || !login || !id) {
+		if (!username || !login || !id || !phone || !cityId) {
 			throw new Error('Нет необходимых данных')
 		}
 
@@ -76,7 +90,7 @@ class AdminDriverService {
 		driver.username = username
 		driver.login = login
 		driver.phone = phone
-		driver.city = city
+		driver.cityId = cityId
 
 		if (pass && pass != '') {
 			driver.password = await hash(pass, saltNumber)

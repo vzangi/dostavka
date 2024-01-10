@@ -1,5 +1,5 @@
 const Service = require('./service')
-const BaseController = require('../BaseController')
+const BaseController = require('../../BaseController')
 
 class AdminController extends BaseController {
 	async main(req, res) {
