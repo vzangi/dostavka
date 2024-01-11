@@ -1,0 +1,23 @@
+extends /layout/whideTreeRows
+
+block header 
+	include ../header
+
+block main
+	div(class="container")
+
+		div(class="d-flex align-items-center justify-content-between")
+			div(class="d-flex align-items-center gap-2")
+				a(href="/admin/cities")
+					i(class="bi bi-arrow-left fs-3") 
+				h3(class="mb-0") Добавить город
+
+		hr
+
+		form(action="/admin/cities/add" method="post")
+
+			div(class="mb-3")
+				label(class="form-label") Название
+				input(class="form-control" placeholder="Название" name="name" required="") 
+
+			button(class="btn btn-success" type="submit") Добавить

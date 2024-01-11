@@ -1,0 +1,41 @@
+extends /layout/whideTreeRows
+
+block header 
+  include ../header
+
+block main
+  div(class="container")
+
+    div(class="d-flex align-items-center justify-content-between")
+      div(class="d-flex align-items-center gap-2")
+        a(href="/admin")
+          i(class="bi bi-arrow-left fs-3") 
+        h3(class="mb-0") Города
+
+      div
+        a(href="/admin/cities/add" class="btn btn-dark") Добавить город
+
+    hr
+
+    if cities.length == 0
+      p Нет городов
+    else 
+      input(class="form-control form-control-sm mb-2" placeholder="Фильтр..." id="filter")
+      table(class="table table-hover bg-white")
+        thead 
+          tr 
+            th Название
+            th 
+        tbody 
+          each city in cities
+            tr 
+              td(data-val=city.name)= city.name 
+              td 
+                div(class="d-flex justify-content-end gap-1")
+                  a(href="/admin/cities/edit/"+city.id class="btn btn-sm btn-primary" title="Редактировать")
+                    i(class="bi bi-pencil-square")
+                  a(href="/admin/cities/delete/"+city.id class="btn btn-sm btn-danger" title="Удалить")
+                    i(class="bi bi-trash3")
+
+block scripts 
+  script(src="/js/admin/filter.js")
