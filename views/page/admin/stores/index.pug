@@ -40,8 +40,9 @@ block main
 								div(class="d-flex justify-content-end gap-1")
 									a(href="/admin/stores/edit/"+store.id class="btn btn-sm btn-primary" title="Редактировать")
 										i(class="bi bi-pencil-square")
-									a(href="/admin/stores/delete/"+store.id class="btn btn-sm btn-danger" title="Удалить")
+									a(href="/admin/stores/delete/"+store.id class="btn btn-sm btn-danger" title="Удалить магазин")
 										i(class="bi bi-trash3")
 
 block scripts 
+	script(src="/js/admin/remove-confirm.js")
 	script(src="/js/admin/filter.js")
