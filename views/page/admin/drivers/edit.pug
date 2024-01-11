@@ -14,7 +14,7 @@ block main
 
 		hr
 
-		form(action="/admin/drivers/edit" method="post")
+		form(action="/admin/drivers/edit" enctype="multipart/form-data" method="post")
 			input(type="hidden" name="id" value=driver.id)
 
 			div(class="mb-3")
@@ -41,5 +41,13 @@ block main
 							option(value=city.id selected)= city.name
 						else
 							option(value=city.id)= city.name
+
+			div(class="mb-3")
+				label(class="form-label") Аватар
+				if driver.avatar
+					div
+						img(src="/uploads/"+driver.avatar alt="" width="100")
+				input(type='file' name="avatar" class="form-control")
+
 
 			button(class="btn btn-success" type="submit") Редактировать

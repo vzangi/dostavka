@@ -21,6 +21,8 @@
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "express-fileupload": "^1.4.3",
+    "jimp": "^0.22.10",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.6.5",
     "pug": "^3.0.2",

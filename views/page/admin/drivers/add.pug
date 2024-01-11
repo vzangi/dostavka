@@ -14,7 +14,7 @@ block main
 
 		hr
 
-		form(action="/admin/drivers/add" method="post")
+		form(action="/admin/drivers/add" enctype="multipart/form-data" method="post")
 
 			div(class="mb-3")
 				label(class="form-label") Имя
@@ -37,5 +37,9 @@ block main
 				select(class="form-control" name="cityId" required="")
 					each city in cities 
 						option(value=city.id)= city.name
+
+			div(class="mb-3")
+				label(class="form-label") Аватар
+				input(type='file' name="avatar" class="form-control" accept=".jpg, .jpeg, .png")
 
 			button(class="btn btn-success" type="submit") Добавить

@@ -14,7 +14,8 @@ block main
 
 		hr
 
-		form(action="/admin/stores/edit" method="post")
+		form(action="/admin/stores/edit" enctype="multipart/form-data" method="post")
+
 			input(type="hidden" name="id" value=store.id)
 
 			div(class="mb-3")
@@ -53,5 +54,12 @@ block main
 			div(class="mb-3")
 				label(class="form-label") Долгота
 				input(class="form-control" placeholder="Долгота" name="longitude" required="" value=store.longitude) 
+
+			div(class="mb-3")
+				label(class="form-label") Аватар
+				if store.avatar
+					div
+						img(src="/uploads/"+store.avatar alt="" width="100")
+				input(type='file' name="avatar" class="form-control")
 
 			button(class="btn btn-success" type="submit") Редактировать

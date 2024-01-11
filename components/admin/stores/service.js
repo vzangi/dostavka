@@ -1,142 +1,149 @@
+const BaseUserService = require('../../BaseUserService')
 const { hash } = require('bcrypt')
 const Store = require('../../../models/User')
 const City = require('../../../models/City')
 const saltNumber = 10
 
-class AdminStoreService {
-	async main() {
-		const stores = await Store.findAll({
-			where: {
-				role: Store.roles.STORE,
-			},
-			include: [
-				{
-					model: City,
-				},
-			],
-			order: [['id', 'desc']],
-		})
+class AdminStoreService extends BaseUserService {
+  async main() {
+    const stores = await Store.findAll({
+      where: {
+        role: Store.roles.STORE,
+      },
+      include: [
+        {
+          model: City,
+        },
+      ],
+      order: [['id', 'desc']],
+    })
 
-		const data = {
-			stores,
-		}
+    const data = {
+      stores,
+    }
 
-		return data
-	}
+    return data
+  }
 
-	async addStoreFormData() {
-		const cities = await City.findAll()
-		const data = {
-			cities,
-		}
-		return data
-	}
+  async addStoreFormData() {
+    const cities = await City.findAll()
+    const data = {
+      cities,
+    }
+    return data
+  }
 
-	async addStore(storeData) {
-		const {
-			username,
-			login,
-			pass,
-			phone,
-			cityId,
-			address,
-			latitude,
-			longitude,
-		} = storeData
+  async addStore(storeData) {
+    const {
+      username,
+      login,
+      pass,
+      phone,
+      cityId,
+      address,
+      latitude,
+      longitude,
+    } = storeData
 
-		if (!username || !login || !pass || !cityId || !phone || !address) {
-			throw new Error('Нет необходимых данных')
-		}
+    if (!username || !login || !pass || !cityId || !phone || !address) {
+      throw new Error('Нет необходимых данных')
+    }
 
-		const password = await hash(pass, saltNumber)
+    const password = await hash(pass, saltNumber)
 
-		const data = {
-			username,
-			login,
-			password,
-			phone,
-			cityId,
-			address,
-			latitude,
-			longitude,
-			role: Store.roles.STORE,
-		}
+    const data = {
+      username,
+      login,
+      password,
+      phone,
+      cityId,
+      address,
+      latitude,
+      longitude,
+      role: Store.roles.STORE,
+    }
 
-		await Store.create(data)
-	}
+    const newStore = await Store.create(data)
 
-	async editStoreFormData(id) {
-		if (!id) {
-			throw new Error('Нет необходимых данных')
-		}
+    return newStore
+  }
 
-		const store = await Store.findByPk(id)
+  async editStoreFormData(id) {
+    if (!id) {
+      throw new Error('Нет необходимых данных')
+    }
 
-		if (!store) {
-			throw new Error('Магазин не найден')
-		}
+    const store = await Store.findByPk(id)
 
-		const cities = await City.findAll()
+    if (!store) {
+      throw new Error('Магазин не найден')
+    }
 
-		const data = {
-			store,
-			cities,
-		}
+    const cities = await City.findAll()
 
-		return data
-	}
+    const data = {
+      store,
+      cities,
+    }
 
-	async editStore(storeData) {
-		const {
-			id,
-			username,
-			login,
-			pass,
-			phone,
-			cityId,
-			address,
-			longitude,
-			latitude,
-		} = storeData
+    return data
+  }
 
-		if (!username || !login || !id || !phone || !cityId) {
-			throw new Error('Нет необходимых данных')
-		}
+  async editStore(storeData) {
+    const {
+      id,
+      username,
+      login,
+      pass,
+      phone,
+      cityId,
+      address,
+      longitude,
+      latitude,
+    } = storeData
 
-		const store = await Store.findByPk(id)
+    if (!username || !login || !id || !phone || !cityId) {
+      throw new Error('Нет необходимых данных')
+    }
 
-		if (!store) {
-			throw new Error('Магазин не найден')
-		}
+    const store = await Store.findByPk(id)
 
-		store.username = username
-		store.login = login
-		store.phone = phone
-		store.cityId = cityId
-		store.address = address
-		store.latitude = latitude
-		store.longitude = longitude
+    if (!store) {
+      throw new Error('Магазин не найден')
+    }
 
-		if (pass && pass != '') {
-			store.password = await hash(pass, saltNumber)
-		}
+    store.username = username
+    store.login = login
+    store.phone = phone
+    store.cityId = cityId
+    store.address = address
+    store.latitude = latitude
+    store.longitude = longitude
 
-		await store.save()
-	}
+    if (pass && pass != '') {
+      store.password = await hash(pass, saltNumber)
+    }
 
-	async removeStore(id) {
-		if (!id) {
-			throw new Error('Нет необходимых данных')
-		}
+    await store.save()
 
-		const store = await Store.findByPk(id)
+    return store
+  }
 
-		if (!store) {
-			throw new Error('Магазин не найден')
-		}
+  async removeStore(id) {
+    if (!id) {
+      throw new Error('Нет необходимых данных')
+    }
 
-		await store.destroy()
-	}
+    const store = await Store.findByPk(id)
+
+    if (!store) {
+      throw new Error('Магазин не найден')
+    }
+
+    await this.removeAvatar(store)
+
+    await store.destroy()
+  }
 }
 
 module.exports = AdminStoreService

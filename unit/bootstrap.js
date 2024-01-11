@@ -30,6 +30,10 @@ app.set('view engine', 'pug')
 const path = require('path')
 app.locals.basedir = path.join(__dirname, '../views')
 
+// Добавляю поддержку загрузки файлов на сервер
+const fileUpload = require('express-fileupload')
+app.use(fileUpload())
+
 // Загрузка роутов
 require('./rouing')(app)
 
