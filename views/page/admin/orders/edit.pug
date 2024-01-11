@@ -1,0 +1,48 @@
+extends /layout/whideTreeRows
+
+block header 
+	include ../header
+
+block main
+	div(class="container")
+
+		div(class="d-flex align-items-center justify-content-between")
+			div(class="d-flex align-items-center gap-2")
+				a(href="/admin/orders")
+					i(class="bi bi-arrow-left fs-3") 
+				h3(class="mb-0") Редактор заказа
+
+		hr
+
+		form(action="/admin/orders/edit" method="post")
+			input(type="hidden" name="id" value=order.id)
+
+			div(class="mb-3")
+				label(class="form-label") Телефон клиента
+				input(class="form-control" placeholder="+7 ..." name="clientPhone" required="" value=order.clientPhone) 
+
+			div(class="mb-3")
+				label(class="form-label") Сумма заказа
+				input(class="form-control" type="number" min="1" placeholder="Сумма заказа" name="summ" required="" value=order.summ) 
+
+			div(class="mb-3")
+				label(class="form-label") Магазин
+				input(class="form-control" value=order.store.username disabled)
+
+			div(class="mb-3")
+				label(class="form-label") Адрес
+				input(class="form-control" placeholder="Адрес" name="address" required="" value=order.address) 
+
+			div(class="mb-3")
+				label(class="form-label") Широта
+				input(class="form-control" placeholder="Широта" name="latitude" value=order.latitude) 
+
+			div(class="mb-3")
+				label(class="form-label") Долгота
+				input(class="form-control" placeholder="Долгота" name="longitude" value=order.longitude) 
+
+			div(class="mb-3")
+				label(class="form-label") Комментарий
+				textarea(class="form-control" rows="4" placeholder="Комментарий" name="comment")= order.comment
+
+			button(class="btn btn-success" type="submit") Изменить

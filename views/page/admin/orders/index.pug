@@ -1,0 +1,31 @@
+extends /layout/whideTreeRows
+
+block header 
+  include ../header
+
+block main
+  div(class="container")
+
+    div(class="d-flex align-items-center justify-content-between")
+      div(class="d-flex align-items-center gap-2")
+        a(href="/admin")
+          i(class="bi bi-arrow-left fs-3") 
+        h3(class="mb-0") Заказы
+
+      div
+        a(href="/admin/orders/add" class="btn btn-dark") Новый заказ
+
+    hr
+
+    input(class="form-control form-control-sm mb-2" placeholder="Фильтр..." id="filter")
+    table(class="table table-hover bg-white")
+      thead 
+        tr 
+          th Статус
+          th Номер клиента
+          th Адрес
+          th 
+      tbody 
+
+block scripts 
+  script(src="/js/admin/filter.js")

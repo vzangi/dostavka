@@ -20,6 +20,8 @@ const statuses = {
 	CANCELLED: 5,
 }
 
+const statusNames = ['', 'Ожидает', 'Принят', 'В пути', 'Доставлен', 'Отменён']
+
 const Order = sequelize.define('orders', {
 	id: {
 		type: DataTypes.INTEGER,
@@ -61,6 +63,7 @@ const Order = sequelize.define('orders', {
 })
 
 Order.statuses = statuses
+Order.statusNames = statusNames
 
 Order.belongsTo(User, { as: 'store', foreignKey: 'storeId' })
 Order.belongsTo(User, { as: 'driver', foreignKey: 'driverId' })
