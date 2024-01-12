@@ -3,113 +3,127 @@ const User = require('../../../models/User')
 const City = require('../../../models/City')
 
 class AdminOrderService {
-	async main() {
-		return {}
-	}
+  async main() {
+    const cities = await City.findAll({
+      order: [['name']],
+    })
+    const data = {
+      cities,
+    }
+    return data
+  }
 
-	async addOrderFormData() {
-		const stores = await User.findAll({
-			where: {
-				role: User.roles.STORE,
-				active: true,
-			},
-			order: [['username']],
-			include: [{ model: City }],
-		})
-		const data = {
-			stores,
-		}
-		return data
-	}
+  async addOrderFormData() {
+    const stores = await User.findAll({
+      where: {
+        role: User.roles.STORE,
+        active: true,
+      },
+      order: [['username']],
+      include: [{ model: City }],
+    })
+    const data = {
+      stores,
+    }
+    return data
+  }
 
-	async addOrder(orderData) {
-		const {
-			clientPhone,
-			summ,
-			storeId,
-			address,
-			latitude,
-			longitude,
-			comment,
-		} = orderData
+  async addOrder(orderData) {
+    const {
+      clientPhone,
+      summ,
+      storeId,
+      address,
+      latitude,
+      longitude,
+      comment,
+    } = orderData
 
-		if (!clientPhone || !storeId || !address) {
-			throw new Error('Нет необходимых данных')
-		}
+    if (!clientPhone || !storeId || !address) {
+      throw new Error('Нет необходимых данных')
+    }
 
-		const store = await User.findByPk(storeId)
+    if (latitude == '') {
+      delete orderData.latitude
+    }
 
-		if (!store) {
-			throw new Error('Магазин не найден')
-		}
+    if (longitude == '') {
+      delete orderData.longitude
+    }
 
-		if (store.role != User.roles.STORE) {
-			throw new Error('Магазин не найден')
-		}
+    const store = await User.findByPk(storeId)
 
-		if (!store.active) {
-			throw new Error('Магазин заблокирован')
-		}
+    if (!store) {
+      throw new Error('Магазин не найден')
+    }
 
-		orderData.cityId = store.cityId
+    if (store.role != User.roles.STORE) {
+      throw new Error('Магазин не найден')
+    }
 
-		const newOrder = await Order.create(orderData)
+    if (!store.active) {
+      throw new Error('Магазин заблокирован')
+    }
 
-		return newOrder
-	}
+    orderData.cityId = store.cityId
 
-	async editOrderFormData(id) {
-		if (!id) {
-			throw new Error('Нет необходимых данных')
-		}
+    const newOrder = await Order.create(orderData)
 
-		const order = await Order.findOne({
-			where: { id },
-			include: [
-				{
-					model: User,
-					as: 'store',
-				},
-			],
-		})
+    return newOrder
+  }
 
-		if (!order) {
-			throw new Error('Заказ не найден')
-		}
+  async editOrderFormData(id) {
+    if (!id) {
+      throw new Error('Нет необходимых данных')
+    }
 
-		const data = {
-			order,
-			statusNames: Order.statusNames,
-		}
+    const order = await Order.findOne({
+      where: { id },
+      include: [
+        {
+          model: User,
+          as: 'store',
+        },
+      ],
+    })
 
-		return data
-	}
+    if (!order) {
+      throw new Error('Заказ не найден')
+    }
 
-	async editOrder(orderData) {
-		const { id, clientPhone, summ, address, latitude, longitude, comment } =
-			orderData
+    const data = {
+      order,
+      statusNames: Order.statusNames,
+    }
 
-		if (!id || !clientPhone || !address) {
-			throw new Error('Нет необходимых данных')
-		}
+    return data
+  }
 
-		const order = await Order.findByPk(id)
+  async editOrder(orderData) {
+    const { id, clientPhone, summ, address, latitude, longitude, comment } =
+      orderData
 
-		if (!order) {
-			throw new Error('Заказ не найден')
-		}
+    if (!id || !clientPhone || !address) {
+      throw new Error('Нет необходимых данных')
+    }
 
-		order.clientPhone = clientPhone
-		order.address = address
-		order.summ = summ
-		order.latitude = latitude
-		order.longitude = longitude
-		order.comment = comment
+    const order = await Order.findByPk(id)
 
-		await order.save()
+    if (!order) {
+      throw new Error('Заказ не найден')
+    }
 
-		return order
-	}
+    order.clientPhone = clientPhone
+    order.address = address
+    order.summ = summ
+    order.latitude = latitude
+    order.longitude = longitude
+    order.comment = comment
+
+    await order.save()
+
+    return order
+  }
 }
 
 module.exports = AdminOrderService

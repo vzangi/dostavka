@@ -1,0 +1,17 @@
+div(class="modal fade" tabindex="-1" id="cityAddForm")
+  div(class="modal-dialog modal-dialog-centered")
+    div(class="modal-content")
+      div(class="modal-header")
+        h5(class="modal-title") Выбрать город
+        button(type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close")
+
+      div(class="modal-body")
+        p Выберите город для добавления в фильтр
+
+        div(class="mb-3")
+          input(class="form-control form-control-sm" placeholder="Фильтр..." id="cityFilter")
+
+        div(class="mb-3")
+          each city in cities
+            button(class="btn btn-dark w-100 mb-3 btn-city-check" data-id=city.id data-name=city.name)= city.name
+

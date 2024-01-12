@@ -37,28 +37,11 @@ const userToSocket = async (socket, next) => {
   const { user } = socket
   if (!user) return next()
 
-  const account = await Account.findOne({
+  socket.account = await User.findOne({
     where: {
       id: user.id,
     },
-    attributes: [
-      'id',
-      'username',
-      'avatar',
-      'vipTo',
-      'online',
-      'vip',
-      'wallet',
-      'status',
-      'role',
-      'gender',
-      'rank',
-      'level',
-      'email',
-    ],
   })
-
-  socket.account = account
 
   next()
 }

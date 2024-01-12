@@ -1,13 +1,8 @@
-const {
-  app,
-  server,
-  io,
-  sequelize,
-} = require('./unit/bootstrap')
+const { server, sequelize } = require('./unit/bootstrap')
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000
 
-(async () => {
+;(async () => {
   // Проверяю подключение к базе данных
   sequelize
     .authenticate()

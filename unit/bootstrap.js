@@ -35,7 +35,10 @@ const fileUpload = require('express-fileupload')
 app.use(fileUpload())
 
 // Загрузка роутов
-require('./rouing')(app)
+require('./routing')(app)
+
+// Загрузка роутов сокетов
+require('./socketRouting')(io)
 
 module.exports = {
   app,

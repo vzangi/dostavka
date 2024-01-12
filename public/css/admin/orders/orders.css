@@ -1,0 +1,9 @@
+.badge {
+  font-size: 14px;
+  margin: 0 5px 5px 0;
+  cursor: pointer;
+}
+
+.status-checker:not(.checked) {
+  background-color: #bbb !important;
+}
