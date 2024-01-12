@@ -1,4 +1,5 @@
 const { DataTypes, Op } = require('sequelize')
+const { tel } = require('../unit/phoneHelper')
 const sequelize = require('../unit/db')
 const City = require('./City')
 
@@ -63,6 +64,12 @@ const User = sequelize.define('users', {
 	online: {
 		type: DataTypes.BOOLEAN,
 		defaultValue: false,
+	},
+	tel: {
+		type: DataTypes.VIRTUAL(DataTypes.STRING),
+		get() {
+			return tel(this.phone)
+		},
 	},
 })
 

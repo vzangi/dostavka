@@ -1,0 +1,66 @@
+extends /layout/whideTreeRows
+
+block head 
+  script(src="/socket.io/socket.io.js")
+  script(src="/js/base.js")
+  script(src="/js/jquery.tmpl.min.js")
+  link(href="/css/admin/orders/orders.css" rel="stylesheet")
+
+block header 
+  include ../header
+
+block main
+  div(class="container")
+
+    div(class="d-flex align-items-center justify-content-between")
+      div(class="d-flex align-items-center gap-2")
+        a(href="/admin")
+          i(class="bi bi-arrow-left fs-3") 
+        h3(class="mb-0") 
+          span Заказ #
+          span= order.id
+      div
+        button(class="btn btn-danger btn-sm") Отменить
+        button(class="btn btn-success btn-sm ms-2") Выполнить
+
+    hr
+
+    div(class="row")
+      div(class="col-12 mb-3")
+        h6 
+          small Время поступления заказа: 
+          span(title=(new Date(order.createdAt)))= order.coolDate
+
+        h6 
+          small Статус заказа: 
+          if order.status == 1
+            span(class="badge bg-warning") Ожидает
+
+
+      div(class="col-4 mb-3 text-center")
+        h6= order.store.username
+        div= order.store.address
+        div 
+          a(href="tel:"+order.store.tel)= order.store.phone
+        div 
+          small Сумма: 
+          sapn= order.summ+' p.'
+
+      div(class="col-4 mb-3 text-center")
+        h6 Доставщик
+        if order.driver
+          div= order.driver.username
+          div= order.driver.phone
+        else
+          div
+            button(class="btn btn-primary btn-sm") Назначить вручную
+
+      div(class="col-4 mb-3 text-center")
+        h6 Клиент
+        div= order.address
+        div
+          a(href="tel:"+order.tel)= order.clientPhone
+
+
+
+block scripts 

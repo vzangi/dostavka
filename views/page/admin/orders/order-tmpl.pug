@@ -1,6 +1,6 @@
 script(id="orderTmpl" type="text/x-jquery-tmpl")
   tr(class="status-${status} table-${statuses[status-1].bgColorClass}")
-    td 
+    td(class="text-center")
       a(href="/admin/orders/${id}" target="_blank") ${id}
     td 
       span(title="${toDateString(createdAt)}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true") ${coolDate}
@@ -9,15 +9,15 @@ script(id="orderTmpl" type="text/x-jquery-tmpl")
     td 
       span(title="${city.name}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true") ${address}
     td 
-      a(href="/admin/stores/${storeId}" target="_blank" title='${store.address}<br>${store.phone}' data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true") ${store.username}
-    td ${summ} р.
+      a(href="/admin/stores/edit/${storeId}" target="_blank" title='${store.address}<br>${store.phone}' data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true") ${store.username}
+    td ${summ}&nbsp;р.
     . 
       {{if driver}}
     td 
-      a(href="/admin/drivers/${driverId}" target="_blank" title="${driver.phone}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true") ${driver.username}
+      a(href="/admin/drivers/edit/${driverId}" target="_blank" title="${driver.phone}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true") ${driver.username}
     . 
       {{else}}
-    td Не назначен
+    td Не&nbsp;назначен
     . 
       {{/if}}
     td

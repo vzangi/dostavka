@@ -13,4 +13,6 @@ router.post('/add', controller.addOrder.bind(controller))
 router.get('/edit/:id', controller.editOrderForm.bind(controller))
 router.post('/edit', controller.editOrder.bind(controller))
 
+router.get('/:id', controller.getOrder.bind(controller))
+
 module.exports = router
