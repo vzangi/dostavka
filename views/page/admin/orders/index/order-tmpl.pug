@@ -1,5 +1,5 @@
 script(id="orderTmpl" type="text/x-jquery-tmpl")
-  tr(class="status-${status} table-${statuses[status-1].bgColorClass}")
+  tr(class="status-${status} table-${statuses[status-1].bgColorClass}" data-id="${id}")
     td(class="text-center")
       a(href="/admin/orders/${id}" target="_blank") ${id}
     td 

@@ -7,9 +7,27 @@ class AdminOrderService {
 		const cities = await City.findAll({
 			order: [['name']],
 		})
+
+		const stores = await User.findAll({
+			where: {
+				role: User.roles.STORE,
+			},
+			order: [['username']],
+		})
+
+		const drivers = await User.findAll({
+			where: {
+				role: User.roles.DRIVER,
+			},
+			order: [['username']],
+		})
+
 		const data = {
 			cities,
+			stores,
+			drivers,
 		}
+
 		return data
 	}
 
@@ -142,8 +160,19 @@ class AdminOrderService {
 			],
 		})
 
+		const { statusNames } = Order
+
+		const drivers = await User.findAll({
+			where: {
+				role: User.roles.DRIVER,
+				cityId: order.cityId,
+			},
+		})
+
 		const data = {
 			order,
+			statusNames,
+			drivers,
 		}
 
 		return data

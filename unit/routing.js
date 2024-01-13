@@ -23,7 +23,7 @@ module.exports = (app) => {
 	// Роуты магазина
 	app.use('/store', require('../components/store/router'))
 
-	// Роуты водителя
+	// Роуты курьеров
 	app.use('/driver', require('../components/driver/router'))
 
 	// Обработка страницы 404

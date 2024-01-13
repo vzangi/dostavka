@@ -1,0 +1,15 @@
+div(class="d-flex align-items-center justify-content-between")
+	div(class="d-flex align-items-center gap-2")
+		a(href="/admin")
+			i(class="bi bi-arrow-left fs-3") 
+		h3(class="mb-0") 
+			span Заказ #
+			span(class="orderId")= order.id
+	div
+		if order.status < 4
+			button(class="btn btn-danger btn-sm" id="cancel-order") Отменить
+			button(class="btn btn-success btn-sm ms-2" id="complete-order") Выполнить
+		else
+			button(class="btn btn-primary btn-sm ms-2" id="reboot-order") Вернуть заказ 
+
+hr

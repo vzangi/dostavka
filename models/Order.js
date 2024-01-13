@@ -22,7 +22,28 @@ const statuses = {
 	CANCELLED: 5,
 }
 
-const statusNames = ['', 'Ожидает', 'Принят', 'В пути', 'Доставлен', 'Отменён']
+const statusNames = [
+	{
+		name: 'Ожидает',
+		bgColorClass: 'warning',
+	},
+	{
+		name: 'Принят',
+		bgColorClass: 'primary',
+	},
+	{
+		name: 'В пути',
+		bgColorClass: 'info',
+	},
+	{
+		name: 'Выполнен',
+		bgColorClass: 'success',
+	},
+	{
+		name: 'Отменён',
+		bgColorClass: 'danger',
+	},
+]
 
 const Order = sequelize.define('orders', {
 	id: {

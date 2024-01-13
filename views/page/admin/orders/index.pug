@@ -6,6 +6,10 @@ block head
   script(src="/js/jquery.tmpl.min.js")
   link(href="/css/admin/orders/orders.css" rel="stylesheet")
 
+  link(rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css")
+  link(href="/css/ui/datepicker.css" rel="stylesheet")
+  script(src="https://code.jquery.com/ui/1.13.2/jquery-ui.js")
+
 block header 
   include ../header
 
@@ -19,6 +23,6 @@ block main
     include ./index/table
 
 block scripts 
-  include ./order-tmpl
-  include ./filter-tmpl
-  script(src="/js/admin/orders/orders.js")
+  include ./index/order-tmpl
+  include ./index/filter-tmpl
+  script(src="/js/admin/orders/index/filter.js")

@@ -1,0 +1,17 @@
+div(class="modal fade" tabindex="-1" id="storeAddForm")
+  div(class="modal-dialog modal-dialog-centered")
+    div(class="modal-content")
+      div(class="modal-header")
+        h5(class="modal-title") Выбрать магазин
+        button(type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close")
+
+      div(class="modal-body")
+        p Выберите магазин для добавления в фильтр
+
+        div(class="mb-3")
+          input(class="form-control form-control-sm" placeholder="Фильтр..." id="storeFilter")
+
+        div(class="mb-3")
+          each store in stores
+            button(class="btn btn-dark w-100 mb-3 btn-store-check" data-id=store.id data-name=store.username)= store.username
+

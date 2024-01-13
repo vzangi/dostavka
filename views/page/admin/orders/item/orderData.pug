@@ -1,0 +1,13 @@
+div(class="row")
+	div(class="col-12 mb-3")
+		h6 
+			small Время поступления заказа: 
+			span(title=(new Date(order.createdAt)))= order.coolDate
+
+		h6 
+			small Сумма: 
+			span= order.summ+' p.'
+
+		h6 
+			small Статус заказа: 
+			span(class="badge bg-"+statusNames[order.status-1].bgColorClass)= statusNames[order.status-1].name

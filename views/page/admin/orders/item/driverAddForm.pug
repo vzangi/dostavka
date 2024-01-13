@@ -1,0 +1,17 @@
+div(class="modal fade" tabindex="-1" id="driverAddForm")
+  div(class="modal-dialog modal-dialog-centered")
+    div(class="modal-content")
+      div(class="modal-header")
+        h5(class="modal-title") Назначить курьера
+        button(type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close")
+
+      div(class="modal-body")
+        p Выберите курьера для заказа 
+
+        div(class="mb-3")
+          input(class="form-control form-control-sm" placeholder="Фильтр..." id="driverFilter")
+
+        div(class="mb-3")
+          each driver in drivers
+            button(class="btn btn-dark w-100 mb-3 btn-driver-check" data-id=driver.id data-name=driver.username)= driver.username + ', ' + driver.tel
+

@@ -10,15 +10,15 @@ block main
 			div(class="d-flex align-items-center gap-2")
 				a(href="/admin")
 					i(class="bi bi-arrow-left fs-3") 
-				h3(class="mb-0") Водители
+				h3(class="mb-0") Курьеры
 
 			div
-				a(href="/admin/drivers/add" class="btn btn-dark") Добавить водителя
+				a(href="/admin/drivers/add" class="btn btn-dark") Добавить курьера
 
 		hr
 
 		if drivers.length == 0
-			p Нет водителей
+			p Нет курьеров
 		else 
 			input(class="form-control form-control-sm mb-2" placeholder="Фильтр..." id="filter")
 			table(class="table table-hover bg-white")
