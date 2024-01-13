@@ -31,6 +31,16 @@ class AdminOrderController extends BaseSocketController {
 		}
 	}
 
+	async takedOrder(req, callback) {
+		try {
+			const { orderId } = req
+			const data = await this.service.takedOrder(orderId)
+			callback({ status: 0, data })
+		} catch (error) {
+			callback({ status: 1, msg: error.message })
+		}
+	}
+
 	async cancelOrder(req, callback) {
 		try {
 			const { orderId } = req

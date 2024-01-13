@@ -11,6 +11,9 @@ module.exports = (io, socket) => {
 	socket.on('driver.revert', controller.revertDriver.bind(controller))
 
 	// Отмена заказа
+	socket.on('order.taked', controller.takedOrder.bind(controller))
+
+	// Отмена заказа
 	socket.on('order.cancel', controller.cancelOrder.bind(controller))
 
 	// Вернуть заказ в работу

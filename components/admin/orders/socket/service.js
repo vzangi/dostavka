@@ -130,6 +130,25 @@ class AdminOrderService extends BaseService {
 		return order
 	}
 
+	async takedOrder(orderId) {
+		const order = await this._getOrderById(orderId)
+
+		if (order.status != Order.statuses.ACCEPTED) {
+			throw new Error(`Заказ #${orderId} не подтверждён`)
+		}
+
+		if (!order.driverId) {
+			throw new Error(`Заказу #${orderId} не назначен курьер`)
+		}
+
+		order.status = Order.statuses.TAKED
+		await order.save()
+
+		this.io.of('/order').emit('order.update', order)
+
+		return order
+	}
+
 	async cancelOrder(orderId) {
 		const order = await this._getOrderById(orderId)
 
