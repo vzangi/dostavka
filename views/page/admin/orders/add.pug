@@ -2,6 +2,8 @@ extends /layout/whideTreeRows
 
 block header 
 	include ../header
+	script(src="/socket.io/socket.io.js")
+	script(src="/js/2gis/geocoder.js")
 
 block main
 	div(class="container")
@@ -32,18 +34,26 @@ block main
 
 			div(class="mb-3")
 				label(class="form-label") Адрес
-				input(class="form-control" placeholder="Адрес" name="address" required="") 
+				div(class="input-group")
+					input(class="form-control" placeholder="Адрес" name="address" required="") 
+					button(class="btn btn-dark" type="button" id="getPoint")
+						i(class="bi bi-geo-alt")
 
-			div(class="mb-3")
-				label(class="form-label") Широта
-				input(class="form-control" placeholder="Широта" name="latitude") 
-
-			div(class="mb-3")
-				label(class="form-label") Долгота
-				input(class="form-control" placeholder="Долгота" name="longitude") 
+			div(class="row")
+				div(class="col-md-6")
+					div(class="mb-3")
+						label(class="form-label") Широта
+						input(class="form-control" placeholder="Широта" name="latitude") 
+				div(class="col-md-6")
+					div(class="mb-3")
+						label(class="form-label") Долгота
+						input(class="form-control" placeholder="Долгота" name="longitude") 
 
 			div(class="mb-3")
 				label(class="form-label") Комментарий
 				textarea(class="form-control" rows="4" placeholder="Комментарий" name="comment")
 
 			button(class="btn btn-success" type="submit") Добавить
+
+block scripts 
+	script(src="/js/admin/orders/add.js")

@@ -5,15 +5,10 @@ div(class="d-flex align-items-center justify-content-between")
 		h3(class="mb-0") 
 			span Заказ #
 			span(class="orderId")= order.id
-	div
-
-		if order.status == 2 
-			button(class="btn btn-info btn-sm ms-2" id="taked-order") Забрать
-
-		if order.status < 4
-			button(class="btn btn-danger btn-sm ms-2" id="cancel-order") Отменить
-			button(class="btn btn-success btn-sm ms-2" id="complete-order") Выполнить
-		else
-			button(class="btn btn-primary btn-sm ms-2" id="reboot-order") Вернуть заказ 
+	div(class="order-btns")
+		button(class="btn btn-info btn-sm ms-2 d-none" id="taked-order" data-showon="[2]") Забрать
+		button(class="btn btn-success btn-sm ms-2 d-none" id="complete-order" data-showon="[2,3]") Выполнить
+		button(class="btn btn-danger btn-sm ms-2 d-none" id="cancel-order" data-showon="[1,2,3]") Отменить
+		button(class="btn btn-primary btn-sm ms-2 d-none" id="reboot-order" data-showon="[4,5]") Вернуть заказ 
 
 hr

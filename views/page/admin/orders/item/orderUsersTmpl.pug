@@ -1,0 +1,42 @@
+script(id="orderUsersTmpl" type="text/x-jquery-tmpl")
+	div(class="d-flex flex-column flex-md-row align-items-center justify-content-center gap-3 mb-3 order-users")
+
+		div(class="store bg-white text-center p-3 rounded shadow") 
+			h6 ${store.username}
+			hr
+			div ${store.address}
+			div 
+				a(href="tel:${store.tel}") ${store.phone}
+
+		i(class="bi bi-arrow-left-right text-secondary")
+
+		div(class="driver bg-white text-center p-3 rounded shadow")
+			h6 Курьер
+			hr
+			. 
+				{{if driver}}
+			div ${driver.username}
+			div 
+				a(href="tel:${driver.tel}") ${driver.phone}
+				.
+					{{if status < 4}}
+				div
+					button(class="btn btn-sm btn-danger mt-1" id="revert-driver" data-driverid="${driver.id}") Снять курьера
+				. 
+					{{/if}}
+			. 
+				{{else}}
+			div
+				button(class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#driverAddForm") Назначить вручную
+			. 
+				{{/if}}
+
+		i(class="bi bi-arrow-left-right text-secondary")
+
+		div(class="client bg-white text-center p-3 rounded shadow")
+			h6 Клиент
+			hr
+			div ${address}
+			div
+				a(href="tel:${tel}") ${clientPhone}
+

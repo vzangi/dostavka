@@ -2,6 +2,7 @@ extends /layout/whideTreeRows
 
 block header 
 	include ../header
+	script(src="/js/2gis/geocoder.js")
 
 block main
 	div(class="container")
@@ -22,38 +23,49 @@ block main
 				label(class="form-label") Название
 				input(class="form-control" placeholder="Название" name="username" value=store.username) 
 
-			div(class="mb-3")
-				label(class="form-label") Логин
-				input(class="form-control" placeholder="Логин" name="login" value=store.login) 
-
-			div(class="mb-3")
-				label(class="form-label") Пароль
-				input(class="form-control" placeholder="Пароль" name="pass") 
+			div(class="row")
+				div(class="col-md-6")
+					div(class="mb-3")
+						label(class="form-label") Логин
+						input(class="form-control" placeholder="Логин" name="login" value=store.login) 
+				div(class="col-md-6")
+					div(class="mb-3")
+						label(class="form-label") Пароль
+						input(class="form-control" placeholder="Пароль" name="pass") 
 
 			div(class="mb-3")
 				label(class="form-label") Телефон
 				input(class="form-control" placeholder="Телефон" name="phone" required="" value=store.phone) 
 
-			div(class="mb-3")
-				label(class="form-label") Город
-				select(class="form-control" name="cityId" required="")
-					each city in cities 
-						if city.id == store.cityId
-							option(value=city.id selected)= city.name
-						else
-							option(value=city.id)= city.name
+			div(class="row")
+				div(class="col-md-6")
+					div(class="mb-3")
+						label(class="form-label") Город
+						select(class="form-control" name="cityId" required="")
+							each city in cities 
+								if city.id == store.cityId
+									option(value=city.id selected)= city.name
+								else
+									option(value=city.id)= city.name
 
-			div(class="mb-3")
-				label(class="form-label") Адрес
-				input(class="form-control" placeholder="Адрес" name="address" required="" value=store.address) 
+				div(class="col-md-6")
+					div(class="mb-3")
+						label(class="form-label") Адрес
+						div(class="input-group")
+							input(class="form-control" placeholder="Адрес" name="address" required="" value=store.address) 
+							button(class="btn btn-dark" type="button" id="getPoint")
+								i(class="bi bi-geo-alt")
 
-			div(class="mb-3")
-				label(class="form-label") Широта
-				input(class="form-control" placeholder="Широта" name="latitude" required="" value=store.latitude) 
+			div(class="row")
+				div(class="col-md-6")
+					div(class="mb-3")
+						label(class="form-label") Широта
+						input(class="form-control" placeholder="Широта" name="latitude" required="" value=store.latitude) 
 
-			div(class="mb-3")
-				label(class="form-label") Долгота
-				input(class="form-control" placeholder="Долгота" name="longitude" required="" value=store.longitude) 
+				div(class="col-md-6")
+					div(class="mb-3")
+						label(class="form-label") Долгота
+						input(class="form-control" placeholder="Долгота" name="longitude" required="" value=store.longitude) 
 
 			div(class="mb-3")
 				label(class="form-label") Аватар
@@ -63,3 +75,6 @@ block main
 				input(type='file' name="avatar" class="form-control")
 
 			button(class="btn btn-success" type="submit") Редактировать
+
+block scripts 
+	script(src="/js/admin/stores/edit.js")

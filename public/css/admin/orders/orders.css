@@ -7,3 +7,18 @@
 .status-checker:not(.checked) {
   background-color: #bbb !important;
 }
+
+.status-dot {
+  width: 100px;
+  text-align: center;
+}
+
+.status-comment {
+  border-left: 2px solid #888;
+  margin: 0 0 0 46px;
+  padding: 0.5rem 0 0.5rem 1rem;
+}
+
+.status-comment p {
+  margin: 0;
+}

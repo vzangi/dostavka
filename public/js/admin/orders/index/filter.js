@@ -93,6 +93,11 @@ $(function () {
 		if ($(`tr[data-id=${order.id}]`).length == 1) filter()
 	})
 
+	// Запускаю фильтр если приходит новый заказ
+	socket.on('order.created', (order) => {
+		filter()
+	})
+
 	// Открыть блок фильтра
 	filterBtn.click(function () {
 		filterBox.slideToggle()

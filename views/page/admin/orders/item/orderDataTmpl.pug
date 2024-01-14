@@ -1,0 +1,23 @@
+script(id="orderDataTmpl" type="text/x-jquery-tmpl")
+	div(class="row")
+		div(class="col-12 mb-3")
+			h6 
+				small Время поступления заказа: 
+				span ${coolDate}
+
+			h6 
+				small Сумма: 
+				span ${summ} p.
+
+			. 
+				{{if comment != ''}}
+			h6 
+				small Комментарий: 
+				span ${comment}
+			. 
+				{{/if}}
+
+			h6 
+				small Статус заказа: 
+				span(class="badge bg-${statuses[status-1].bgColorClass}") ${statuses[status-1].name}
+

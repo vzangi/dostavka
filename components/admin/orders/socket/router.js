@@ -1,8 +1,14 @@
 module.exports = (io, socket) => {
 	const controller = require('./controller')(io, socket)
 
-	// Список последних сообщений
+	// Создание заказа
+	socket.on('order.create', controller.createOrder.bind(controller))
+
+	// Список последних заказов
 	socket.on('orders.get', controller.getOrders.bind(controller))
+
+	// Список последних сообщений
+	socket.on('orders.getbyid', controller.getOrderById.bind(controller))
 
 	// Назначение курьера заказу
 	socket.on('driver.set', controller.setDriver.bind(controller))

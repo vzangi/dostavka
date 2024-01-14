@@ -14,12 +14,16 @@ block main
 
     include ./item/header
 
-    include ./item/orderData
+    div(class="order-data")
 
-    include ./item/orderUsers
+    div(class="order-users")
 
-    if !order.driver
-      include ./item/driverAddForm
+    div(class="order-statuses")
+
+    include ./item/driverAddForm
 
 block scripts 
+  include ./item/orderDataTmpl
+  include ./item/orderUsersTmpl
+  include ./item/orderStatusesTmpl
   script(src="/js/admin/orders/item/main.js")

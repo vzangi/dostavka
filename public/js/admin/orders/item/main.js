@@ -23,22 +23,51 @@ $(function () {
 		})
 	})
 
+	// Обновление заказа
+	const updateOrder = (order) => {
+		// Показываю или скрываю кнопки управления статусом заказа
+		$('.order-btns .btn').each((_, btn) => {
+			const { showon } = $(btn).data()
+			if (showon.indexOf(order.status) < 0) {
+				$(btn).addClass('d-none')
+			} else {
+				$(btn).removeClass('d-none')
+			}
+		})
+
+		$('#orderDataTmpl').tmpl(order).appendTo($('.order-data').empty())
+		$('#orderUsersTmpl').tmpl(order).appendTo($('.order-users').empty())
+		$('#orderStatusesTmpl').tmpl(order).appendTo($('.order-statuses').empty())
+
+		bsTooltips()
+	}
+
 	// Обработка ответа от сокета
 	const callback = (res) => {
-		const { status, msg } = res
-		if (status != 0) return alert(msg)
-		location.reload()
+		const { status, msg, data } = res
+		if (status != 0) {
+			alert(msg)
+			return false
+		}
+		updateOrder(data)
+		return true
 	}
+
+	// Получение данных заказа по сокету
+	socket.emit('orders.getbyid', { orderId }, callback)
 
 	// Выбор одного из курьеров
 	btnDriverChecker.click(function () {
 		const { id, name } = $(this).data()
 		if (!confirm(`Назначить курьера ${name} исполнителем заказа?`)) return
-		socket.emit('driver.set', { orderId, driverId: id }, callback)
+		socket.emit('driver.set', { orderId, driverId: id }, (res) => {
+			if (!callback(res)) return
+			$('#driverAddForm').modal('hide')
+		})
 	})
 
 	// Снять курьера с заказа
-	$('#revert-driver').click(function () {
+	$('.order-users').on('click', '#revert-driver', function () {
 		if (!confirm('Снять курьера с заказа?')) return
 		const driverId = $(this).data().driverid
 		socket.emit('driver.revert', { orderId, driverId }, callback)
@@ -47,7 +76,8 @@ $(function () {
 	// Отменить заказ
 	$('#cancel-order').click(function () {
 		if (!confirm('Отменить заказ?')) return
-		socket.emit('order.cancel', { orderId }, callback)
+		const reason = prompt('Причина отмены заказа')
+		socket.emit('order.cancel', { orderId, reason }, callback)
 	})
 
 	// Вернуть заказ
