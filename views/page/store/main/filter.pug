@@ -1,0 +1,47 @@
+mixin statusChecker(id, name, cls, checked)
+  span(class=`badge status-checker text-light status-${id} bg-${cls} ${checked?' checked':''}` data-id=id)= name
+
+div(class="filter-box" style="display:none1")
+  div(class="container-fluid ")
+    div(class="bg-secondary rounded p-2")
+      div(class="row")
+
+        div(class="col-md-4 col-lg-2")
+          div(class="mb-2 mb-lg-0")
+            div(class="input-group input-group-sm")
+              span(class="input-group-text") 
+                i(class="bi bi-phone")
+              input(class="form-control" id="client-phone" placeholder="Телефон клиента...")
+
+        div(class="col-md-4 col-lg-2")
+          div(class="mb-2 mb-lg-0")
+            div(class="input-group input-group-sm")
+              span(class="input-group-text") 
+                i(class="bi bi-geo-alt-fill")
+              input(class="form-control" id="delivery-address" placeholder="Адрес доставки...")
+
+        div(class="col-md-4 col-lg-2")
+          div(class="mb-2 mb-lg-0")
+            div(class="input-group input-group-sm")
+              span(class="input-group-text") 
+                i(class="bi bi-calendar-check")
+              input(type="text" class="form-control" placeholder="Дата заказа" id="date-from")
+
+        div(class="col-12 col-md-8 col-lg-5")
+          div(class="mb-2 mb-md-0 h-100")
+            h6(class="text-light d-lg-none") Статус: 
+            div(class="statuses d-flex align-items-center flex-wrap gap-1")
+              +statusChecker(1, 'Ожидает', 'warning', true)
+              +statusChecker(2, 'Принят', 'primary', true)
+              +statusChecker(3, 'В пути', 'info', true)
+              +statusChecker(4, 'Выполнен', 'success')
+              +statusChecker(5, 'Отменён', 'danger')
+
+        div(class="col-12 col-md-4 col-lg-1")
+          h6(class="d-none d-md-block d-lg-none") &nbsp; 
+          div(class="text-end")
+            button(class="btn btn-dark btn-sm btn-start-filter w-100 w-md-auto") 
+              span(class="d-lg-none me-2") Применить фильтр
+              i(class="bi bi-filter")
+
+    hr

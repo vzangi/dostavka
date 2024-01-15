@@ -28,3 +28,7 @@ const bsTooltips = () => {
 }
 
 const toDateString = (d) => new Date(d).toLocaleDateString('en-GB')
+
+$(function () {
+	bsTooltips()
+})

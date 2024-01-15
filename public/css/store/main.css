@@ -1,0 +1,15 @@
+input:focus,
+input:active {
+	outline: none !important;
+	box-shadow: none !important;
+}
+.statuses {
+	margin-top: 2px;
+}
+.statuses .badge {
+	font-size: 15px;
+	cursor: pointer;
+}
+.status-checker:not(.checked) {
+	background-color: #bbb !important;
+}
