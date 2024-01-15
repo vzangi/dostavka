@@ -17,6 +17,9 @@ module.exports = (io) => {
 
       // Роуты курьеров
       require('../components/admin/drivers/socket/router')(io, socket)
+
+      // Роуты магазинов
+      require('../components/admin/stores/socket/router')(io, socket)
     }
   })
 }

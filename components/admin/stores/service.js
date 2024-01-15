@@ -18,8 +18,11 @@ class AdminStoreService extends BaseUserService {
       order: [['id', 'desc']],
     })
 
+    const cities = await City.findAll()
+
     const data = {
       stores,
+      cities,
     }
 
     return data
@@ -45,6 +48,8 @@ class AdminStoreService extends BaseUserService {
       longitude,
     } = storeData
 
+    const active = !!storeData.active
+
     if (!username || !login || !pass || !cityId || !phone || !address) {
       throw new Error('Нет необходимых данных')
     }
@@ -60,6 +65,7 @@ class AdminStoreService extends BaseUserService {
       address,
       latitude,
       longitude,
+      active,
       role: Store.roles.STORE,
     }
 
@@ -102,6 +108,8 @@ class AdminStoreService extends BaseUserService {
       latitude,
     } = storeData
 
+    const active = !!storeData.active
+
     if (!username || !login || !id || !phone || !cityId) {
       throw new Error('Нет необходимых данных')
     }
@@ -119,6 +127,7 @@ class AdminStoreService extends BaseUserService {
     store.address = address
     store.latitude = latitude
     store.longitude = longitude
+    store.active = active
 
     if (pass && pass != '') {
       store.password = await hash(pass, saltNumber)

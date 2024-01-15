@@ -1,0 +1,17 @@
+script(id="storeTmpl" type="text/x-jquery-tmpl")
+  tr(class="${active?'':'table-danger'}")
+    td ${username}
+    td ${phone}
+    td ${city.name}
+    td(class="d-none d-lg-table-cell") ${address}
+    td 
+      div(class="d-flex justify-content-end gap-1")
+        a(href="/admin/stores/edit/${id}" class="btn btn-sm btn-primary" title="Редактировать")
+          i(class="bi bi-pencil-square")
+        a(href="/admin/stores/delete/${id}" class="btn btn-sm btn-danger" title="Удалить магазин")
+          i(class="bi bi-trash3")
+
+script(id="noStoresTmpl" type="text/x-jquery-tmpl")
+  tr(class="no-stores")
+    td(colspan="5")
+      span С текущим фильтром курьеров не найдено

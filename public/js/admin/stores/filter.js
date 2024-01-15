@@ -1,11 +1,11 @@
 $(function () {
   const socket = io('/admin')
 
-  const driverTmpl = $('#driverTmpl')
-  const noDriversTmpl = $('#noDriversTmpl')
+  const storeTmpl = $('#storeTmpl')
+  const noStoresTmpl = $('#noStoresTmpl')
   const badgeFilterTmpl = $('#badgeFilterTmpl')
 
-  const driversListBox = $('.drivers-list')
+  const storesListBox = $('.stores-list')
   const filterBtn = $('.btn-filter')
   const filterBox = $('.filter-box')
 
@@ -29,11 +29,6 @@ $(function () {
       .map((_, bc) => $(bc).data().value)
       .toArray()
 
-    filterData.onlines = $('.onlines .btn-check')
-      .filter((_, bc) => bc.checked)
-      .map((_, bc) => $(bc).data().value)
-      .toArray()
-
     const phone = $('#phone').val()
     if (phone != '') {
       filterData.phone = phone
@@ -44,18 +39,18 @@ $(function () {
       filterData.name = name
     }
 
-    // Получение списка курьеров через сокет
-    socket.emit('drivers.get', filterData, (res) => {
+    // Получение списка магазинов через сокет
+    socket.emit('stores.get', filterData, (res) => {
       const { status, msg } = res
       if (status != 0) return alert(msg)
 
       const { data } = res
 
       if (data.length == 0) {
-        return noDriversTmpl.tmpl().appendTo(driversListBox.empty())
+        return noStoresTmpl.tmpl().appendTo(storesListBox.empty())
       }
 
-      driverTmpl.tmpl(data).appendTo(driversListBox.empty())
+      storeTmpl.tmpl(data).appendTo(storesListBox.empty())
 
       bsTooltips()
     })

@@ -1,22 +1,23 @@
 extends /layout/whideTreeRows
 
 block head 
-	script(src="/socket.io/socket.io.js")
-	script(src="/js/jquery.tmpl.min.js")
-	link(href="/css/admin/drivers/drivers.css" rel="stylesheet")
+  script(src="/socket.io/socket.io.js")
+  script(src="/js/base.js")
+  script(src="/js/jquery.tmpl.min.js")
+  link(href="/css/admin/drivers/drivers.css" rel="stylesheet")
 
 block header 
-	include ../header
+  include ../header
 
 block main
-	div(class="container")
+  div(class="container")
 
-		include ./index/header
-		include ./index/filter
-		include ./index/table
+    include ./index/header
+    include ./index/filter
+    include ./index/table
 
 block scripts 
-	include ./index/driver-tmpl
-	include ./index/filter-tmpl
-	script(src="/js/admin/remove-confirm.js")
-	script(src="/js/admin/drivers/filter.js")
+  include ./index/driver-tmpl
+  include /include/admin/badgeFilterTmpl
+  script(src="/js/admin/remove-confirm.js")
+  script(src="/js/admin/drivers/filter.js")
