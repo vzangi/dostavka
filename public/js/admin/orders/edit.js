@@ -5,15 +5,15 @@ $(function () {
     event.preventDefault()
 
     const orderData = {}
+    orderData.id = $("[name='id']").val()
     orderData.clientPhone = $("[name='clientPhone']").val()
     orderData.summ = $("[name='summ']").val()
-    orderData.storeId = $("[name='storeId']").val()
     orderData.address = $("[name='address']").val()
     orderData.latitude = $("[name='latitude']").val()
     orderData.longitude = $("[name='longitude']").val()
     orderData.comment = $("[name='comment']").val()
 
-    socket.emit('order.create', orderData, (res) => {
+    socket.emit('order.update', orderData, (res) => {
       const { status, msg, data } = res
       if (status != 0) return alert(msg)
 
@@ -24,8 +24,7 @@ $(function () {
   })
 
   $('#getPoint').click(async () => {
-    const storeId = $(`[name='storeId']`).val()
-    const { city } = $(`option[value=${storeId}]`).data()
+    const { city } = $('#getPoint').data()
     const address = $(`[name='address']`).val()
     const fullAddress = `${city}, ${address}`
 

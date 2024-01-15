@@ -1,7 +1,7 @@
 script(id="orderUsersTmpl" type="text/x-jquery-tmpl")
 	div(class="d-flex flex-column flex-md-row align-items-center justify-content-center gap-3 mb-3 order-users")
 
-		div(class="store bg-white text-center p-3 rounded shadow") 
+		div(class="user-block store bg-white text-center p-3 rounded shadow") 
 			h6 ${store.username}
 			hr
 			div ${store.address}
@@ -10,7 +10,7 @@ script(id="orderUsersTmpl" type="text/x-jquery-tmpl")
 
 		i(class="bi bi-arrow-left-right text-secondary")
 
-		div(class="driver bg-white text-center p-3 rounded shadow")
+		div(class="user-block driver bg-white text-center p-3 rounded shadow")
 			h6 Курьер
 			hr
 			. 
@@ -33,7 +33,7 @@ script(id="orderUsersTmpl" type="text/x-jquery-tmpl")
 
 		i(class="bi bi-arrow-left-right text-secondary")
 
-		div(class="client bg-white text-center p-3 rounded shadow")
+		div(class="user-block client bg-white text-center p-3 rounded shadow")
 			h6 Клиент
 			hr
 			div ${address}

@@ -1,0 +1,48 @@
+div(class="filter-box")
+  div(class="row pb-3 pt-3 bg-white rounded")
+
+    div(class="col-md-4")
+      div(class="mb-3")
+        h6 Города
+        div(class="cities")
+          span(class="badge bg-success ps-1 pe-1" data-bs-toggle="modal" data-bs-target="#cityAddForm") 
+            i(class="bi bi-plus-circle" title="Добавить город" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true")
+
+    div(class="col-md-4")
+      div(class="mb-3")
+        h6 Статус
+        div(class="btn-group btn-group-sm actives" role="group")
+          input(type="checkbox" class="btn-check" id="active1" autocomplete="off" data-value="1" checked)
+          label(class="btn btn-outline-primary" for="active1") Активен
+          input(type="checkbox" class="btn-check" id="active0" autocomplete="off" data-value="0")
+          label(class="btn btn-outline-primary" for="active0") Заблокирован
+
+    div(class="col-md-4")
+      div(class="mb-3")
+        h6 На линии
+        div(class="btn-group btn-group-sm onlines" role="group")
+          input(type="checkbox" class="btn-check" id="online1" autocomplete="off" data-value="1")
+          label(class="btn btn-outline-primary" for="online1") Да
+          input(type="checkbox" class="btn-check" id="online0" autocomplete="off" data-value="0")
+          label(class="btn btn-outline-primary" for="online0") Нет
+
+    div(class="col-md-4")
+      div(class="mb-3")
+        h6 Имя курьера
+        input(class="form-control form-control-sm" id="name" placeholder="Имя курьера...")
+
+    div(class="col-md-4")
+      div(class="mb-3")
+        h6 Номер курьера
+        input(class="form-control form-control-sm" id="phone" placeholder="Номер курьера...")
+
+    div(class="col-md-4")
+      div(class="mb-3 text-center")
+        h6 &nbsp;
+        button(class="btn btn-success btn-sm btn-start-filter" style="min-width:180px") 
+          span Применить фильтр 
+          i(class="bi bi-filter")
+
+  hr
+
+include ./cityAddForm

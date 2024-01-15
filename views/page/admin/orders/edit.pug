@@ -1,5 +1,9 @@
 extends /layout/whideTreeRows
 
+block head
+	script(src="/socket.io/socket.io.js")
+	script(src="/js/2gis/geocoder.js")
+
 block header 
 	include ../header
 
@@ -8,7 +12,7 @@ block main
 
 		div(class="d-flex align-items-center justify-content-between")
 			div(class="d-flex align-items-center gap-2")
-				a(href="/admin/orders")
+				a(href=`/admin/orders/${order.id}`)
 					i(class="bi bi-arrow-left fs-3") 
 				h3(class="mb-0") Редактор заказа
 
@@ -17,32 +21,45 @@ block main
 		form(action="/admin/orders/edit" method="post")
 			input(type="hidden" name="id" value=order.id)
 
-			div(class="mb-3")
-				label(class="form-label") Телефон клиента
-				input(class="form-control" placeholder="+7 ..." name="clientPhone" required="" value=order.clientPhone) 
+			div(class="row")
+				div(class="col-md-6")
+					div(class="mb-3")
+						label(class="form-label") Магазин
+						input(class="form-control" value=order.store.username disabled)
+				div(class="col-md-6")
+					div(class="mb-3")
+						label(class="form-label") Сумма заказа
+						input(class="form-control" type="number" min="1" placeholder="Сумма заказа" name="summ" required="" value=order.summ) 
 
-			div(class="mb-3")
-				label(class="form-label") Сумма заказа
-				input(class="form-control" type="number" min="1" placeholder="Сумма заказа" name="summ" required="" value=order.summ) 
 
-			div(class="mb-3")
-				label(class="form-label") Магазин
-				input(class="form-control" value=order.store.username disabled)
+				div(class="col-md-6")
+					div(class="mb-3")
+						label(class="form-label") Телефон клиента
+						input(class="form-control" placeholder="+7 ..." name="clientPhone" required="" value=order.clientPhone) 
 
-			div(class="mb-3")
-				label(class="form-label") Адрес
-				input(class="form-control" placeholder="Адрес" name="address" required="" value=order.address) 
+				div(class="col-md-6")
+					div(class="mb-3")
+						label(class="form-label") Адрес
+						div(class="input-group")
+							input(class="form-control" placeholder="Адрес" name="address" required="" value=order.address) 
+							button(class="btn btn-dark" type="button" id="getPoint" data-city=order.city.name)
+								i(class="bi bi-geo-alt")
 
-			div(class="mb-3")
-				label(class="form-label") Широта
-				input(class="form-control" placeholder="Широта" name="latitude" value=order.latitude) 
+				div(class="col-md-6")
+					div(class="mb-3")
+						label(class="form-label") Широта
+						input(class="form-control" placeholder="Широта" name="latitude" value=order.latitude) 
 
-			div(class="mb-3")
-				label(class="form-label") Долгота
-				input(class="form-control" placeholder="Долгота" name="longitude" value=order.longitude) 
+				div(class="col-md-6")
+					div(class="mb-3")
+						label(class="form-label") Долгота
+						input(class="form-control" placeholder="Долгота" name="longitude" value=order.longitude) 
 
 			div(class="mb-3")
 				label(class="form-label") Комментарий
 				textarea(class="form-control" rows="4" placeholder="Комментарий" name="comment")= order.comment
 
 			button(class="btn btn-success" type="submit") Изменить
+
+block scripts 
+	script(src="/js/admin/orders/edit.js")

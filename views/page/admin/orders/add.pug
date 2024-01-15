@@ -1,9 +1,11 @@
 extends /layout/whideTreeRows
 
-block header 
-	include ../header
+block head
 	script(src="/socket.io/socket.io.js")
 	script(src="/js/2gis/geocoder.js")
+
+block header 
+	include ../header
 
 block main
 	div(class="container")

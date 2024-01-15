@@ -1,0 +1,6 @@
+script(id="badgeFilterTmpl" type="text/x-jquery-tmpl")
+  span(class="badge ${cls} bg-secondary" data-id="${id}") 
+    span ${name}
+    span(class="remove-${cls} ms-2" title="Убрать ${name} из фильтра" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true")
+      i(class="bi bi-x-circle-fill")
+

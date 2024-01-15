@@ -1,14 +1,25 @@
 div(class="d-flex align-items-center justify-content-between")
 	div(class="d-flex align-items-center gap-2")
-		a(href="/admin")
+		a(href="/admin/orders")
 			i(class="bi bi-arrow-left fs-3") 
 		h3(class="mb-0") 
 			span Заказ #
 			span(class="orderId")= order.id
+		a(href=`/admin/orders/edit/${order.id}`)
+			i(class="bi bi-pencil fs-4" title="Редакировать заказ" data-bs-toggle="tooltip" data-bs-placement="right") 
+
 	div(class="order-btns")
-		button(class="btn btn-info btn-sm ms-2 d-none" id="taked-order" data-showon="[2]") Забрать
-		button(class="btn btn-success btn-sm ms-2 d-none" id="complete-order" data-showon="[2,3]") Выполнить
-		button(class="btn btn-danger btn-sm ms-2 d-none" id="cancel-order" data-showon="[1,2,3]") Отменить
-		button(class="btn btn-primary btn-sm ms-2 d-none" id="reboot-order" data-showon="[4,5]") Вернуть заказ 
+		button(class="btn btn-info ms-2 d-none" id="taked-order" data-showon="[2]") 
+			span(class="me-2 d-none d-md-inline") Забрать 
+			i(class="bi bi-file-play-fill")
+		button(class="btn btn-success ms-2 d-none" id="complete-order" data-showon="[2,3]") 
+			span(class="me-2 d-none d-md-inline") Выполнить 
+			i(class="bi bi-check-square") 
+		button(class="btn btn-danger ms-2 d-none" id="cancel-order" data-showon="[1,2,3]") 
+			span(class="me-2 d-none d-md-inline") Отменить
+			i(class="bi bi-x-square") 
+		button(class="btn btn-primary ms-2 d-none" id="reboot-order" data-showon="[4,5]") 
+			span(class="me-2 d-none d-md-inline") Вернуть заказ 
+			i(class="bi bi-skip-backward-btn")
 
 hr

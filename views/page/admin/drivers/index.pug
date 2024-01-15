@@ -1,48 +1,22 @@
 extends /layout/whideTreeRows
 
+block head 
+	script(src="/socket.io/socket.io.js")
+	script(src="/js/jquery.tmpl.min.js")
+	link(href="/css/admin/drivers/drivers.css" rel="stylesheet")
+
 block header 
 	include ../header
 
 block main
 	div(class="container")
 
-		div(class="d-flex align-items-center justify-content-between")
-			div(class="d-flex align-items-center gap-2")
-				a(href="/admin")
-					i(class="bi bi-arrow-left fs-3") 
-				h3(class="mb-0") Курьеры
-
-			div
-				a(href="/admin/drivers/add" class="btn btn-dark") Добавить курьера
-
-		hr
-
-		if drivers.length == 0
-			p Нет курьеров
-		else 
-			input(class="form-control form-control-sm mb-2" placeholder="Фильтр..." id="filter")
-			table(class="table table-hover bg-white")
-				thead 
-					tr 
-						th Имя
-						th Логин
-						th Телефон
-						th(class="d-none d-lg-table-cell") Город
-						th 
-				tbody 
-					each driver in drivers
-						tr 
-							td(data-val=driver.username)= driver.username 
-							td(data-val=driver.login)= driver.login
-							td(data-val=driver.phone)= driver.phone
-							td(data-val=driver.city.name class="d-none d-lg-table-cell")= driver.city.name
-							td 
-								div(class="d-flex justify-content-end gap-1")
-									a(href="/admin/drivers/edit/"+driver.id class="btn btn-sm btn-primary" title="Редактировать")
-										i(class="bi bi-pencil-square")
-									a(href="/admin/drivers/delete/"+driver.id class="btn btn-sm btn-danger" title="Удалить видителя")
-										i(class="bi bi-trash3")
+		include ./index/header
+		include ./index/filter
+		include ./index/table
 
 block scripts 
+	include ./index/driver-tmpl
+	include ./index/filter-tmpl
 	script(src="/js/admin/remove-confirm.js")
-	script(src="/js/admin/filter.js")
+	script(src="/js/admin/drivers/filter.js")

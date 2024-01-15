@@ -17,30 +17,53 @@ block main
 		form(action="/admin/drivers/edit" enctype="multipart/form-data" method="post")
 			input(type="hidden" name="id" value=driver.id)
 
-			div(class="mb-3")
-				label(class="form-label") Имя
-				input(class="form-control" placeholder="Имя" name="username" value=driver.username) 
+			div(class="row")
+				div(class="col-md-12")
+					div(class="mb-3")
+						label(class="form-label") Имя
+						input(class="form-control" placeholder="Имя" name="username" value=driver.username) 
 
-			div(class="mb-3")
-				label(class="form-label") Логин
-				input(class="form-control" placeholder="Логин" name="login" value=driver.login) 
+				div(class="col-md-6")
+					div(class="mb-3")
+						label(class="form-label") Логин
+						input(class="form-control" placeholder="Логин" name="login" value=driver.login) 
 
-			div(class="mb-3")
-				label(class="form-label") Пароль
-				input(class="form-control" placeholder="Пароль" name="pass") 
+				div(class="col-md-6")
+					div(class="mb-3")
+						label(class="form-label") Пароль
+						input(class="form-control" placeholder="Пароль" name="pass") 
 
-			div(class="mb-3")
-				label(class="form-label") Телефон
-				input(class="form-control" placeholder="Телефон" name="phone" required="" value=driver.phone) 
+				div(class="col-md-6")
+					div(class="mb-3")
+						label(class="form-label") Телефон
+						input(class="form-control" placeholder="Телефон" name="phone" required="" value=driver.phone) 
+				div(class="col-md-6")
+					div(class="mb-3")
+						label(class="form-label") Город
+						select(class="form-control" name="cityId" required="")
+							each city in cities 
+								if city.id == driver.cityId
+									option(value=city.id selected)= city.name
+								else
+									option(value=city.id)= city.name
 
-			div(class="mb-3")
-				label(class="form-label") Город
-				select(class="form-control" name="cityId" required="")
-					each city in cities 
-						if city.id == driver.cityId
-							option(value=city.id selected)= city.name
-						else
-							option(value=city.id)= city.name
+				div(class="col-md-6")
+					div(class="mb-3")
+						div(class="form-check form-switch")
+							if driver.active
+								input(class="form-check-input" type="checkbox" id="active" name="active" checked)
+							else
+								input(class="form-check-input" type="checkbox" id="active" name="active")
+							label(class="form-check-label" for="active") Активен
+
+				div(class="col-md-6")
+					div(class="mb-3")
+						div(class="form-check form-switch")
+							if driver.online
+								input(class="form-check-input" type="checkbox" id="online" name="online" checked)
+							else
+								input(class="form-check-input" type="checkbox" id="online" name="online")
+							label(class="form-check-label" for="online") На линии
 
 			div(class="mb-3")
 				label(class="form-label") Аватар

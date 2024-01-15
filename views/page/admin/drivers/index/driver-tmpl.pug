@@ -1,0 +1,17 @@
+script(id="driverTmpl" type="text/x-jquery-tmpl")
+  tr(class="${active?online?'table-success':'':'table-danger'}")
+    td ${username}
+    td ${login}
+    td ${phone}
+    td(class="d-none d-lg-table-cell") ${city.name}
+    td 
+      div(class="d-flex justify-content-end gap-1")
+        a(href="/admin/drivers/edit/${id}" class="btn btn-sm btn-primary" title="Редактировать")
+          i(class="bi bi-pencil-square")
+        a(href="/admin/drivers/delete/${id}" class="btn btn-sm btn-danger" title="Удалить видителя")
+          i(class="bi bi-trash3")
+
+script(id="noDriversTmpl" type="text/x-jquery-tmpl")
+  tr(class="no-drivers")
+    td(colspan="4")
+      span С текущим фильтром курьеров не найдено

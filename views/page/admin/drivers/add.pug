@@ -16,27 +16,42 @@ block main
 
 		form(action="/admin/drivers/add" enctype="multipart/form-data" method="post")
 
-			div(class="mb-3")
-				label(class="form-label") Имя
-				input(class="form-control" placeholder="Имя" name="username" required="") 
+			div(class="row")
+				div(class="col-md-12")
+					div(class="mb-3")
+						label(class="form-label") Имя
+						input(class="form-control" placeholder="Имя" name="username" required="") 
 
-			div(class="mb-3")
-				label(class="form-label") Логин
-				input(class="form-control" placeholder="Логин" name="login" required="") 
+				div(class="col-md-6")
+					div(class="mb-3")
+						label(class="form-label") Логин
+						input(class="form-control" placeholder="Логин" name="login" required="") 
+				div(class="col-md-6")
+					div(class="mb-3")
+						label(class="form-label") Пароль
+						input(class="form-control" placeholder="Пароль" name="pass" required="") 
 
-			div(class="mb-3")
-				label(class="form-label") Пароль
-				input(class="form-control" placeholder="Пароль" name="pass" required="") 
+				div(class="col-md-6")
+					div(class="mb-3")
+						label(class="form-label") Телефон
+						input(class="form-control" placeholder="Телефон" name="phone" required="") 
+				div(class="col-md-6")
+					div(class="mb-3")
+						label(class="form-label") Город
+						select(class="form-control" name="cityId" required="")
+							each city in cities 
+								option(value=city.id)= city.name
 
-			div(class="mb-3")
-				label(class="form-label") Телефон
-				input(class="form-control" placeholder="Телефон" name="phone" required="") 
-
-			div(class="mb-3")
-				label(class="form-label") Город
-				select(class="form-control" name="cityId" required="")
-					each city in cities 
-						option(value=city.id)= city.name
+				div(class="col-md-6")
+					div(class="mb-3")
+						div(class="form-check form-switch")
+							input(class="form-check-input" type="checkbox" id="active" name="active" checked)
+							label(class="form-check-label" for="active") Активен
+				div(class="col-md-6")
+					div(class="mb-3")
+						div(class="form-check form-switch")
+							input(class="form-check-input" type="checkbox" id="online" name="online")
+							label(class="form-check-label" for="online") На линии
 
 			div(class="mb-3")
 				label(class="form-label") Аватар

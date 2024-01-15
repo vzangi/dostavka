@@ -1,231 +1,231 @@
 $(function () {
-	const socket = io('/order')
-	const orderTmpl = $('#orderTmpl')
-	const noOrdersTmpl = $('#noOrdersTmpl')
-	const badgeFilterTmpl = $('#badgeFilterTmpl')
+  const socket = io('/admin')
 
-	const ordersListBox = $('.order-list')
-	const filterBtn = $('.btn-filter')
-	const filterBox = $('.filter-box')
-	const statusChecker = $('.status-checker')
-	const btnStartFilter = $('.btn-start-filter')
+  const orderTmpl = $('#orderTmpl')
+  const noOrdersTmpl = $('#noOrdersTmpl')
+  const badgeFilterTmpl = $('#badgeFilterTmpl')
 
-	const citiesFilterBox = $('.cities')
-	const btnCityChecker = $('.btn-city-check')
-	const cityFilter = $('#cityFilter')
+  const ordersListBox = $('.order-list')
+  const filterBtn = $('.btn-filter')
+  const filterBox = $('.filter-box')
+  const statusChecker = $('.status-checker')
+  const btnStartFilter = $('.btn-start-filter')
 
-	const storesFilterBox = $('.stores')
-	const btnStoreChecker = $('.btn-store-check')
-	const storeFilter = $('#storeFilter')
+  const citiesFilterBox = $('.cities')
+  const btnCityChecker = $('.btn-city-check')
+  const cityFilter = $('#cityFilter')
 
-	const driversFilterBox = $('.drivers')
-	const btnDriverChecker = $('.btn-driver-check')
-	const driverFilter = $('#driverFilter')
+  const storesFilterBox = $('.stores')
+  const btnStoreChecker = $('.btn-store-check')
+  const storeFilter = $('#storeFilter')
 
-	// Запуск фильтрации заказов
-	function filter() {
-		const filterData = {}
+  const driversFilterBox = $('.drivers')
+  const btnDriverChecker = $('.btn-driver-check')
+  const driverFilter = $('#driverFilter')
 
-		// Список выбранных статусов
-		filterData.statuses = statusChecker
-			.filter((_, sc) => $(sc).hasClass('checked'))
-			.map((_, sc) => $(sc).data().id)
-			.toArray()
+  // Запуск фильтрации заказов
+  function filter() {
+    const filterData = {}
 
-		filterData.cities = citiesFilterBox
-			.find('.city')
-			.map((_, sc) => $(sc).data().id)
-			.toArray()
+    // Список выбранных статусов
+    filterData.statuses = statusChecker
+      .filter((_, sc) => $(sc).hasClass('checked'))
+      .map((_, sc) => $(sc).data().id)
+      .toArray()
 
-		filterData.stores = storesFilterBox
-			.find('.store')
-			.map((_, st) => $(st).data().id)
-			.toArray()
+    filterData.cities = citiesFilterBox
+      .find('.city')
+      .map((_, sc) => $(sc).data().id)
+      .toArray()
 
-		filterData.drivers = driversFilterBox
-			.find('.driver')
-			.map((_, st) => $(st).data().id)
-			.toArray()
+    filterData.stores = storesFilterBox
+      .find('.store')
+      .map((_, st) => $(st).data().id)
+      .toArray()
 
-		const phone = $('#client-phone').val()
-		if (phone != '') {
-			filterData.phone = phone
-		}
+    filterData.drivers = driversFilterBox
+      .find('.driver')
+      .map((_, st) => $(st).data().id)
+      .toArray()
 
-		const address = $('#delivery-address').val()
-		if (address != '') {
-			filterData.address = address
-		}
+    const phone = $('#client-phone').val()
+    if (phone != '') {
+      filterData.phone = phone
+    }
 
-		const dateFrom = $('#date-from').val()
-		if (dateFrom != '') {
-			filterData.dateFrom = dateFrom
-		}
+    const address = $('#delivery-address').val()
+    if (address != '') {
+      filterData.address = address
+    }
 
-		const dateTo = $('#date-to').val()
-		if (dateTo != '') {
-			filterData.dateTo = dateTo
-		}
+    const dateFrom = $('#date-from').val()
+    if (dateFrom != '') {
+      filterData.dateFrom = dateFrom
+    }
 
-		// Получение списка заказов через сокет
-		socket.emit('orders.get', filterData, (res) => {
-			const { status, msg } = res
-			if (status != 0) return alert(msg)
+    const dateTo = $('#date-to').val()
+    if (dateTo != '') {
+      filterData.dateTo = dateTo
+    }
 
-			const { data } = res
+    // Получение списка заказов через сокет
+    socket.emit('orders.get', filterData, (res) => {
+      const { status, msg } = res
+      if (status != 0) return alert(msg)
 
-			if (data.length == 0) {
-				return noOrdersTmpl.tmpl().appendTo(ordersListBox.empty())
-			}
+      const { data } = res
 
-			orderTmpl.tmpl(data).appendTo(ordersListBox.empty())
-			console.log(data)
+      if (data.length == 0) {
+        return noOrdersTmpl.tmpl().appendTo(ordersListBox.empty())
+      }
 
-			bsTooltips()
-		})
-	}
+      orderTmpl.tmpl(data).appendTo(ordersListBox.empty())
 
-	filter()
+      bsTooltips()
+    })
+  }
 
-	// Произошло обновление заказа
-	socket.on('order.update', (order) => {
-		// Если в таблице есть этот заказ - перезапускаем фильтр
-		if ($(`tr[data-id=${order.id}]`).length == 1) filter()
-	})
+  filter()
 
-	// Запускаю фильтр если приходит новый заказ
-	socket.on('order.created', (order) => {
-		filter()
-	})
+  // Произошло обновление заказа
+  socket.on('order.update', (order) => {
+    // Если в таблице есть этот заказ - перезапускаем фильтр
+    if ($(`tr[data-id=${order.id}]`).length == 1) filter()
+  })
 
-	// Открыть блок фильтра
-	filterBtn.click(function () {
-		filterBox.slideToggle()
-	})
+  // Запускаю фильтр если приходит новый заказ
+  socket.on('order.created', (order) => {
+    filter()
+  })
 
-	// Клик на чекере статуса
-	statusChecker.click(function () {
-		$(this).toggleClass('checked')
-	})
+  // Открыть блок фильтра
+  filterBtn.click(function () {
+    filterBox.slideToggle()
+  })
 
-	// Клик на кнопке запуск фильтрации
-	btnStartFilter.click(filter)
+  // Клик на чекере статуса
+  statusChecker.click(function () {
+    $(this).toggleClass('checked')
+  })
 
-	// Выбор города в модальной форме фильтра
-	btnCityChecker.click(function () {
-		const { id, name } = $(this).data()
-		$(this).hide()
-		badgeFilterTmpl.tmpl({ id, name, cls: 'city' }).prependTo(citiesFilterBox)
-	})
+  // Клик на кнопке запуск фильтрации
+  btnStartFilter.click(filter)
 
-	// Удаление города из списка фильтра
-	citiesFilterBox.on('click', '.remove-city', function () {
-		const { id } = $(this).parent().data()
-		$(this).parent().remove()
-		$(`.btn-city-check[data-id=${id}]`).show()
-		$('.tooltip').remove()
-	})
+  // Выбор города в модальной форме фильтра
+  btnCityChecker.click(function () {
+    const { id, name } = $(this).data()
+    $(this).hide()
+    badgeFilterTmpl.tmpl({ id, name, cls: 'city' }).prependTo(citiesFilterBox)
+  })
 
-	// Фильтрация городов в модальном окне
-	cityFilter.keyup(function () {
-		const v = $(this).val().toLowerCase()
+  // Удаление города из списка фильтра
+  citiesFilterBox.on('click', '.remove-city', function () {
+    const { id } = $(this).parent().data()
+    $(this).parent().remove()
+    $(`.btn-city-check[data-id=${id}]`).show()
+    $('.tooltip').remove()
+  })
 
-		btnCityChecker.each((_, btn) => {
-			if ($(btn).text().toLowerCase().indexOf(v) >= 0) {
-				$(btn).removeClass('d-none')
-			} else {
-				$(btn).addClass('d-none')
-			}
-		})
-	})
+  // Фильтрация городов в модальном окне
+  cityFilter.keyup(function () {
+    const v = $(this).val().toLowerCase()
 
-	// Выбор магазина в модальной форме фильтра
-	btnStoreChecker.click(function () {
-		const { id, name } = $(this).data()
-		$(this).hide()
-		badgeFilterTmpl.tmpl({ id, name, cls: 'store' }).prependTo(storesFilterBox)
-	})
+    btnCityChecker.each((_, btn) => {
+      if ($(btn).text().toLowerCase().indexOf(v) >= 0) {
+        $(btn).removeClass('d-none')
+      } else {
+        $(btn).addClass('d-none')
+      }
+    })
+  })
 
-	// Удаление магазина из списка фильтра
-	storesFilterBox.on('click', '.remove-store', function () {
-		const { id } = $(this).parent().data()
-		$(this).parent().remove()
-		$(`.btn-store-check[data-id=${id}]`).show()
-		$('.tooltip').remove()
-	})
+  // Выбор магазина в модальной форме фильтра
+  btnStoreChecker.click(function () {
+    const { id, name } = $(this).data()
+    $(this).hide()
+    badgeFilterTmpl.tmpl({ id, name, cls: 'store' }).prependTo(storesFilterBox)
+  })
 
-	// Фильтрация магазинов в модальном окне
-	storeFilter.keyup(function () {
-		const v = $(this).val().toLowerCase()
+  // Удаление магазина из списка фильтра
+  storesFilterBox.on('click', '.remove-store', function () {
+    const { id } = $(this).parent().data()
+    $(this).parent().remove()
+    $(`.btn-store-check[data-id=${id}]`).show()
+    $('.tooltip').remove()
+  })
 
-		btnStoreChecker.each((_, btn) => {
-			if ($(btn).text().toLowerCase().indexOf(v) >= 0) {
-				$(btn).removeClass('d-none')
-			} else {
-				$(btn).addClass('d-none')
-			}
-		})
-	})
+  // Фильтрация магазинов в модальном окне
+  storeFilter.keyup(function () {
+    const v = $(this).val().toLowerCase()
 
-	// Выбор курьера в модальной форме фильтра
-	btnDriverChecker.click(function () {
-		const { id, name } = $(this).data()
-		$(this).hide()
-		badgeFilterTmpl
-			.tmpl({ id, name, cls: 'driver' })
-			.prependTo(driversFilterBox)
-	})
+    btnStoreChecker.each((_, btn) => {
+      if ($(btn).text().toLowerCase().indexOf(v) >= 0) {
+        $(btn).removeClass('d-none')
+      } else {
+        $(btn).addClass('d-none')
+      }
+    })
+  })
 
-	// Удаление курьера из списка фильтра
-	driversFilterBox.on('click', '.remove-driver', function () {
-		const { id } = $(this).parent().data()
-		$(this).parent().remove()
-		$(`.btn-driver-check[data-id=${id}]`).show()
-		$('.tooltip').remove()
-	})
+  // Выбор курьера в модальной форме фильтра
+  btnDriverChecker.click(function () {
+    const { id, name } = $(this).data()
+    $(this).hide()
+    badgeFilterTmpl
+      .tmpl({ id, name, cls: 'driver' })
+      .prependTo(driversFilterBox)
+  })
 
-	// Фильтрация курьеров в модальном окне
-	driverFilter.keyup(function () {
-		const v = $(this).val().toLowerCase()
+  // Удаление курьера из списка фильтра
+  driversFilterBox.on('click', '.remove-driver', function () {
+    const { id } = $(this).parent().data()
+    $(this).parent().remove()
+    $(`.btn-driver-check[data-id=${id}]`).show()
+    $('.tooltip').remove()
+  })
 
-		btnDriverChecker.each((_, btn) => {
-			if ($(btn).text().toLowerCase().indexOf(v) >= 0) {
-				$(btn).removeClass('d-none')
-			} else {
-				$(btn).addClass('d-none')
-			}
-		})
-	})
+  // Фильтрация курьеров в модальном окне
+  driverFilter.keyup(function () {
+    const v = $(this).val().toLowerCase()
 
-	// Выбор даты из календаря
-	$('#date-from, #date-to').datepicker({
-		dateFormat: 'dd.mm.yy',
-		firstDay: 1,
-		showOtherMonths: true,
-		selectOtherMonths: true,
-		monthNames: [
-			'Январь',
-			'Февраль',
-			'Март',
-			'Апрель',
-			'Май',
-			'Июнь',
-			'Июль',
-			'Август',
-			'Сентябрь',
-			'Октябрь',
-			'Ноябрь',
-			'Декабрь',
-		],
-		dayNamesMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
-		dayNames: [
-			'Понедельник',
-			'Вторник',
-			'Среда',
-			'Четверг',
-			'Пятница',
-			'Суббота',
-			'Воскресенье',
-		],
-	})
+    btnDriverChecker.each((_, btn) => {
+      if ($(btn).text().toLowerCase().indexOf(v) >= 0) {
+        $(btn).removeClass('d-none')
+      } else {
+        $(btn).addClass('d-none')
+      }
+    })
+  })
+
+  // Выбор даты из календаря
+  $('#date-from, #date-to').datepicker({
+    dateFormat: 'dd.mm.yy',
+    firstDay: 1,
+    showOtherMonths: true,
+    selectOtherMonths: true,
+    monthNames: [
+      'Январь',
+      'Февраль',
+      'Март',
+      'Апрель',
+      'Май',
+      'Июнь',
+      'Июль',
+      'Август',
+      'Сентябрь',
+      'Октябрь',
+      'Ноябрь',
+      'Декабрь',
+    ],
+    dayNamesMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+    dayNames: [
+      'Понедельник',
+      'Вторник',
+      'Среда',
+      'Четверг',
+      'Пятница',
+      'Суббота',
+      'Воскресенье',
+    ],
+  })
 })
