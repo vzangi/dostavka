@@ -37,26 +37,21 @@ class AdminDriverService extends BaseUserService {
   }
 
   async addDriver(driverData) {
-    const { username, login, pass, phone, cityId } = driverData
+    const { username, login, pass, phone, cityId, address } = driverData
 
-    const active = !!driverData.active
-    const online = !!driverData.online
+    driverData.active = !!driverData.active
+    driverData.online = !!driverData.online
 
-    if (!username || !login || !pass || !cityId || !phone) {
+    if (!username || !login || !pass || !cityId || !phone || !address) {
       throw new Error('Нет необходимых данных')
     }
 
-    const password = await hash(pass, saltNumber)
+    driverData.password = await hash(pass, saltNumber)
+    delete driverData.pass
 
     const data = {
-      username,
-      login,
-      password,
-      phone,
-      cityId,
-      active,
-      online,
       role: Driver.roles.DRIVER,
+      ...driverData,
     }
 
     const driver = await Driver.create(data)
@@ -86,9 +81,9 @@ class AdminDriverService extends BaseUserService {
   }
 
   async editDriver(driverData) {
-    const { id, username, login, pass, phone, cityId } = driverData
+    const { id, username, login, pass, phone, cityId, address } = driverData
 
-    if (!username || !login || !id || !phone || !cityId) {
+    if (!username || !login || !id || !phone || !cityId || !address) {
       throw new Error('Нет необходимых данных')
     }
 
@@ -104,6 +99,7 @@ class AdminDriverService extends BaseUserService {
     driver.login = login
     driver.phone = phone
     driver.cityId = cityId
+    driver.address = address
 
     if (pass && pass != '') {
       driver.password = await hash(pass, saltNumber)

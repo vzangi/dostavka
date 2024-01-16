@@ -56,6 +56,11 @@ class AdminOrderService extends BaseService {
 
     this.io.of('/admin').emit('order.created', order)
 
+    const storeSockets = this.getUserSockets(storeId, '/store')
+    storeSockets.forEach((storeSocket) => {
+      storeSocket.emit('order.created', order)
+    })
+
     return order
   }
 
@@ -87,6 +92,11 @@ class AdminOrderService extends BaseService {
     await order.save()
 
     this.io.of('/admin').emit('order.update', order)
+
+    const storeSockets = this.getUserSockets(order.storeId, '/store')
+    storeSockets.forEach((storeSocket) => {
+      storeSocket.emit('order.update', order)
+    })
 
     return order
   }
@@ -342,6 +352,11 @@ class AdminOrderService extends BaseService {
     const updatedOrder = await this.getOrderById(order.id)
 
     io.of('/admin').emit('order.update', updatedOrder)
+
+    const storeSockets = this.getUserSockets(order.storeId, '/store')
+    storeSockets.forEach((storeSocket) => {
+      storeSocket.emit('order.update', order)
+    })
 
     return updatedOrder
   }

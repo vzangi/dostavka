@@ -1,12 +1,28 @@
 extends /layout/main
 
 block head
-	link(rel="stylesheet" href="/css/store/main.css")
-	script(src="/js/base.js")
+  link(rel="stylesheet" href="/css/store/main.css")
+  script(src="/socket.io/socket.io.js")
+  script(src="/js/jquery.tmpl.min.js")
+  script(src="/js/base.js")
+  script(src="/js/2gis/geocoder.js")
+
+  link(rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css")
+  link(href="/css/ui/datepicker.css" rel="stylesheet")
+  script(src="https://code.jquery.com/ui/1.13.2/jquery-ui.js")
 
 block content
-	include ./header
-	include ./filter
+  include ./header
+  include ./filter
+  include ./table
+
+  include ./orderAddForm
 
 prepend content 
-	include ../header
+  include ../header
+
+block scripts 
+  include ./order-tmpl
+  script(src="/js/store/socket.js")
+  script(src="/js/store/filter.js")
+  script(src="/js/store/order.js")

@@ -1,0 +1,44 @@
+div(class="modal fade" tabindex="-1" id="orderAddForm" data-bs-backdrop="static" )
+  div(class="modal-dialog")
+    div(class="modal-content")
+      div(class="modal-header")
+        h5(class="modal-title") Новый заказ
+        button(type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close")
+
+      form(method="post" action="/order/create")
+
+        div(class="modal-body")
+          input(type="hidden" name="latitude")
+          input(type="hidden" name="longitude")
+          input(type="hidden" name="storeId" value=currentAccount.id)
+          input(type="hidden" name="cityId" value=city.id)
+          input(type="hidden" name="city-name" value=city.name)
+
+
+          div(class="mb-3")
+            div(class="input-group")
+              span(class="input-group-text" title="Телефон клиента" data-bs-toggle="tooltip" data-bs-placement="top") 
+                i(class="bi bi-phone")
+              input(class="form-control" name="client-phone" placeholder="Телефон клиента..." autocomplete="off" required="")
+
+          div(class="mb-3")
+            div(class="input-group")
+              span(class="input-group-text" title="Адрес доставки" data-bs-toggle="tooltip" data-bs-placement="top") 
+                i(class="bi bi-geo-alt-fill")
+              input(class="form-control" name="delivery-address" placeholder="Адрес доставки..." autocomplete="off" required="")
+
+
+          div(class="mb-3")
+            div(class="input-group")
+              span(class="input-group-text" title="Сумма заказа" data-bs-toggle="tooltip" data-bs-placement="top") 
+                i(class="bi bi-cash-coin")
+              input(class="form-control" name="order-summ" placeholder="Сумма заказа" autocomplete="off" type="number")
+
+          div(class="mb-3")
+            div(class="input-group")
+              span(class="input-group-text" title="Комментарий к заказу" data-bs-toggle="tooltip" data-bs-placement="top") 
+                i(class="bi bi-chat-text-fill")
+              textarea(class="form-control" name="order-comment" placeholder="Комментарий для курьера" autocomplete="off")
+
+        div(class="modal-footer")
+          button(type="submit" class="btn btn-primary") Создать заказ

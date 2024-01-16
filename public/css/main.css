@@ -48,3 +48,7 @@ td {
 td > i {
   background-color: yellow;
 }
+
+.tooltip hr {
+  margin: 2px 0;
+}

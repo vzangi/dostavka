@@ -1,0 +1,26 @@
+script(id="orderTmpl" type="text/x-jquery-tmpl")
+  tr(class="status-${status} table-${statuses[status-1].bgColorClass}" data-id="${id}")
+    td
+      a(href="/admin/orders/${id}" target="_blank") ${id}
+    td 
+      a(href="tel:${clientPhone}" title="${city.name}<hr>${clientPhone}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true") ${address}
+    td ${summ}&nbsp;р.
+    . 
+      {{if driver}}
+    td 
+      a(href="tel:${driver.phone}" title="${driver.phone}<hr>${driver.address}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true") ${driver.username}
+    . 
+      {{else}}
+    td Не&nbsp;назначен
+    . 
+      {{/if}}
+    td 
+      span ${statuses[status-1].name}
+    td 
+      span(title="${toDateString(createdAt)}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true") ${coolDate}
+    td
+
+script(id="noOrdersTmpl" type="text/x-jquery-tmpl")
+  tr(class="no-orders")
+    td(colspan="10")
+      span С текущим фильтром заказов не найдено

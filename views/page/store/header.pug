@@ -3,7 +3,7 @@ header(class="mb-3")
 		div(class="d-flex align-items-center justify-content-between")
 
 			div(class="pt-2 pb-2") 
-				a(href="/")
+				a(href="/" title="На главную" data-bs-toggle="tooltip" data-bs-placement="right")
 					img(src="/images/dostavka_100.svg" alt="" width="40")
 
 			div 
@@ -11,5 +11,5 @@ header(class="mb-3")
 
 			div
 				a(href="/logout")
-					button(class="btn btn-dark btn-sm rounded-circle" title="Выход" style="width:40px; height: 40px;") 
+					button(class="btn btn-dark btn-sm rounded-circle" title="Выход" data-bs-toggle="tooltip" data-bs-placement="left" style="width:40px; height: 40px;") 
 						i(class="bi bi-box-arrow-right")
