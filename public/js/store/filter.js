@@ -1,101 +1,144 @@
 $(function () {
-  const filterBox = $('.filter-box')
-  const filterBtn = $('.btn-filter')
-  const btnStartFilter = $('.btn-start-filter')
-  const statusChecker = $('.status-checker')
-  const ordersListBox = $('.order-list')
+	const filterBox = $('.filter-box')
+	const filterBtn = $('.btn-filter')
+	const btnStartFilter = $('.btn-start-filter')
+	const statusChecker = $('.status-checker')
+	const ordersListBox = $('.order-list')
 
-  const orderTmpl = $('#orderTmpl')
-  const noOrdersTmpl = $('#noOrdersTmpl')
+	const orderTmpl = $('#orderTmpl')
+	const noOrdersTmpl = $('#noOrdersTmpl')
 
-  function filter() {
-    const filterData = {}
-    const phone = $('#client-phone').val()
-    if (phone != '') filterData.phone = phone
+	if ('localStorage' in window) {
+		if (!localStorage.getItem('statusChecks')) {
+			localStorage.setItem('statusChecks', '[1,2,3]')
+		}
 
-    const address = $('#delivery-address').val()
-    if (address != '') filterData.address = address
+		const selectedChecks = JSON.parse(localStorage.getItem('statusChecks'))
 
-    const dateFrom = $('#date-from').val()
-    if (dateFrom != '') filterData.dateFrom = dateFrom
+		selectedChecks.forEach((sc) => {
+			$(`.status-checker.status-${sc}`).addClass('checked')
+		})
+	}
 
-    // Список выбранных статусов
-    filterData.statuses = statusChecker
-      .filter((_, sc) => $(sc).hasClass('checked'))
-      .map((_, sc) => $(sc).data().id)
-      .toArray()
+	function filter() {
+		const filterData = {}
+		const phone = $('#client-phone').val()
+		if (phone != '') filterData.phone = phone
 
-    socket.emit('orders.get', filterData, (res) => {
-      const { status, msg } = res
-      if (status != 0) return alert(msg)
+		const address = $('#delivery-address').val()
+		if (address != '') filterData.address = address
 
-      const { data } = res
+		const dateFrom = $('#date-from').val()
+		if (dateFrom != '') filterData.dateFrom = dateFrom
 
-      if (data.length == 0) {
-        return noOrdersTmpl.tmpl().appendTo(ordersListBox.empty())
-      }
+		// Список выбранных статусов
+		filterData.statuses = statusChecker
+			.filter((_, sc) => $(sc).hasClass('checked'))
+			.map((_, sc) => $(sc).data().id)
+			.toArray()
 
-      orderTmpl.tmpl(data).appendTo(ordersListBox.empty())
+		socket.emit('orders.get', filterData, (res) => {
+			const { status, msg } = res
+			if (status != 0) return alert(msg)
 
-      bsTooltips()
-    })
-  }
+			const { data } = res
 
-  filter()
+			if (data.length == 0) {
+				return noOrdersTmpl.tmpl().appendTo(ordersListBox.empty())
+			}
 
-  // Запускаю фильтр если приходит новый заказ
-  socket.on('order.created', (order) => {
-    filter()
-  })
+			orderTmpl.tmpl(data).appendTo(ordersListBox.empty())
 
-  // Произошло обновление заказа
-  socket.on('order.update', (order) => {
-    // Если в таблице есть этот заказ - перезапускаем фильтр
-    if ($(`tr[data-id=${order.id}]`).length == 1) filter()
-  })
+			bsTooltips()
+		})
+	}
 
-  // Скрыть/показать фильтр
-  filterBtn.click(function () {
-    filterBox.slideToggle()
-  })
+	filter()
 
-  // Клик на кнопке запуск фильтрации
-  btnStartFilter.click(filter)
+	// Запускаю фильтр если приходит новый заказ
+	socket.on('order.created', (order) => {
+		filter()
+	})
 
-  // Клик на чекере статуса
-  statusChecker.click(function () {
-    $(this).toggleClass('checked')
-  })
+	// Произошло обновление заказа
+	socket.on('order.update', (order) => {
+		// Если в таблице есть этот заказ - перезапускаем фильтр
+		if ($(`tr[data-id=${order.id}]`).length == 1) filter()
+	})
 
-  // Выбор даты из календаря
-  $('#date-from').datepicker({
-    dateFormat: 'dd.mm.yy',
-    firstDay: 1,
-    showOtherMonths: true,
-    selectOtherMonths: true,
-    monthNames: [
-      'Январь',
-      'Февраль',
-      'Март',
-      'Апрель',
-      'Май',
-      'Июнь',
-      'Июль',
-      'Август',
-      'Сентябрь',
-      'Октябрь',
-      'Ноябрь',
-      'Декабрь',
-    ],
-    dayNamesMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
-    dayNames: [
-      'Понедельник',
-      'Вторник',
-      'Среда',
-      'Четверг',
-      'Пятница',
-      'Суббота',
-      'Воскресенье',
-    ],
-  })
+	// Скрыть/показать фильтр
+	filterBtn.click(function () {
+		filterBox.slideToggle()
+	})
+
+	// Клик на кнопке запуск фильтрации
+	btnStartFilter.click(filter)
+
+	// Клик на чекере статуса
+	statusChecker.click(function () {
+		$(this).toggleClass('checked')
+
+		if ('localStorage' in window) {
+			const selectedChecks = $('.status-checker.checked')
+				.map((_, sc) => {
+					return $(sc).data().id
+				})
+				.toArray()
+
+			localStorage.setItem('statusChecks', JSON.stringify(selectedChecks))
+		}
+	})
+
+	$('.filter-box .input-group input').keyup(function () {
+		if ($(this).val() != '') {
+			$(this).parent().find('.clear-input').addClass('active')
+		} else {
+			$(this).parent().find('.clear-input').removeClass('active')
+		}
+	})
+
+	$('.clear-input').click(function () {
+		$(this).removeClass('active')
+		$('.tooltip').remove()
+		$(this).parent().find('input').val('').focus()
+	})
+
+	// Выбор даты из календаря
+	$('#date-from').datepicker({
+		dateFormat: 'dd.mm.yy',
+		firstDay: 1,
+		showOtherMonths: true,
+		selectOtherMonths: true,
+		monthNames: [
+			'Январь',
+			'Февраль',
+			'Март',
+			'Апрель',
+			'Май',
+			'Июнь',
+			'Июль',
+			'Август',
+			'Сентябрь',
+			'Октябрь',
+			'Ноябрь',
+			'Декабрь',
+		],
+		dayNamesMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+		dayNames: [
+			'Понедельник',
+			'Вторник',
+			'Среда',
+			'Четверг',
+			'Пятница',
+			'Суббота',
+			'Воскресенье',
+		],
+		onSelect: function (date, datepicker) {
+			if (date != '') {
+				datepicker.input.next().addClass('active')
+			} else {
+				datepicker.input.next().removeClass('active')
+			}
+		},
+	})
 })
