@@ -2,7 +2,7 @@ script(id="orderStatusTmpl" type="text/x-jquery-tmpl")
 	div(class="status-item")
 		div(class="status-comment")
 			p ${user.username}
-			p ${comment}
+			p {{html comment}}
 		div(class="status-dot")
 			span(class="badge bg-${statuses[status-1].bgColorClass}" title="${coolDate}" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-html="true") ${statuses[status-1].name}
 

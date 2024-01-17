@@ -1,18 +1,21 @@
-div(class="modal fade" tabindex="-1" id="orderAddForm" data-bs-backdrop="static" )
+div(class="modal fade" tabindex="-1" id="orderChangeForm" data-bs-backdrop="static" )
   div(class="modal-dialog")
     div(class="modal-content")
       div(class="modal-header")
-        h5(class="modal-title") Новый заказ
+        h5(class="modal-title") 
+          span Заказ #
+          span(class="order-id")
+        span(class="badge-box ms-2")
+
         button(type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close")
 
-      form(method="post" action="/order/create")
+      form(method="post" action="/order/update")
 
         div(class="modal-body")
-          input(type="hidden" name="latitude")
-          input(type="hidden" name="longitude")
-          input(type="hidden" name="storeId" value=currentAccount.id)
-          input(type="hidden" name="cityId" value=city.id)
-          input(type="hidden" name="city-name" value=city.name)
+          input(type="hidden" name="id")
+          input(type="hidden" name="storeId")
+          input(type="hidden" name="cityId")
+          input(type="hidden" name="city-name")
 
 
           div(class="mb-3")
@@ -40,5 +43,11 @@ div(class="modal fade" tabindex="-1" id="orderAddForm" data-bs-backdrop="static"
                 i(class="bi bi-chat-text-fill")
               textarea(class="form-control" name="order-comment" placeholder="Комментарий для курьера" autocomplete="off")
 
+          a(href="#" class="btn-show-history") Показать историю измения статусов
+          div(class="order-history")
+
+
         div(class="modal-footer justify-content-center")
-          button(type="submit" class="btn btn-primary") Создать заказ
+          button(type="button" class="btn btn-danger btn-cancel-order btn-sm") Отменить
+          button(type="button" class="btn btn-info btn-take-order btn-sm") Отправлен
+          button(type="submit" class="btn btn-primary btn-update-order btn-sm") Изменить 

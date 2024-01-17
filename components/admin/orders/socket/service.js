@@ -5,6 +5,7 @@ const City = require('../../../../models/City')
 const OrderStatus = require('../../../../models/OrderStatus')
 const { Op } = require('sequelize')
 const { isoDateFromString } = require('../../../../unit/dateHelper')
+const htmlspecialchars = require('htmlspecialchars')
 
 class AdminOrderService extends BaseService {
   async createOrder(orderData) {
@@ -296,7 +297,8 @@ class AdminOrderService extends BaseService {
     }
 
     let comment = 'Администратор отменил заказа'
-    if (reason) comment = comment + ` по причине: ${reason}`
+    if (reason)
+      comment = comment + ` по причине: <b>${htmlspecialchars(reason)}</b>`
 
     return await this._setNewStatus(order, Order.statuses.CANCELLED, comment)
   }

@@ -1,0 +1,21 @@
+script(id="orderStatusTmpl" type="text/x-jquery-tmpl")
+  div(class="status-item")
+    div(class="status-comment")
+      p(class="bolder") ${user.username}
+      p {{html comment}}
+    div(class="status-dot")
+      span(class="badge bg-${statuses[status-1].bgColorClass}" title="${coolDate}" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-html="true") ${statuses[status-1].name}
+
+script(id="orderStatusesTmpl" type="text/x-jquery-tmpl")
+  div(class="pb-3")
+    hr
+    h5 История изменения статуса
+
+    div(class="status-item")
+      div(class="status-dot")
+        span(class="badge bg-secondary rounded-circle" title="${coolDate}" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-html="true" style="width:20px;height:20px") 
+    . 
+      {{each(i ,os) orderStatuses }}
+        {{tmpl(os) '#orderStatusTmpl'}}
+    . 
+      {{/each}}

@@ -5,6 +5,7 @@ const City = require('../../../models/City')
 const OrderStatus = require('../../../models/OrderStatus')
 const { Op } = require('sequelize')
 const { isoBetweenDates } = require('../../../unit/dateHelper')
+const htmlspecialchars = require('htmlspecialchars')
 
 class StoreSocketService extends BaseService {
   async createOrder(orderData) {
@@ -47,6 +48,8 @@ class StoreSocketService extends BaseService {
   }
 
   async updateOrder(orderData) {
+    const store = this._getCurrentStore()
+
     const { id, clientPhone, summ, address, latitude, longitude, comment } =
       orderData
 
@@ -64,16 +67,33 @@ class StoreSocketService extends BaseService {
 
     const order = await this.getOrderById(id)
 
+    if (order.storeId != store.id) {
+      throw new Error('Заказ не найден')
+    }
+
+    if (order.status == Order.statuses.CANCELLED) {
+      throw new Error('Заказ был отменён. Редактирование запрещено.')
+    }
+
+    if (order.status == Order.statuses.DELIVERED) {
+      throw new Error('Заказ выполнен. Редактирование запрещено.')
+    }
+
     order.clientPhone = clientPhone
     order.summ = summ
     order.address = address
     if (orderData.latitude) order.latitude = orderData.latitude
-    if (orderData.longitude) order.latitude = orderData.longitude
+    if (orderData.longitude) order.longitude = orderData.longitude
     order.comment = comment
 
     await order.save()
 
     this.io.of('/admin').emit('order.update', order)
+
+    const storeSockets = this.getUserSockets(store.id, '/store')
+    storeSockets.forEach((storeSocket) => {
+      storeSocket.emit('order.update', order)
+    })
 
     return order
   }
@@ -199,6 +219,10 @@ class StoreSocketService extends BaseService {
       throw new Error(`Заказ #${orderId} уже отменён`)
     }
 
+    if (order.status == Order.statuses.DELIVERED) {
+      throw new Error(`Заказ #${orderId} уже доставлен, его нельзя отменить`)
+    }
+
     if (order.status == Order.statuses.TAKED) {
       throw new Error(
         `Заказ #${orderId} забрал курьер, сначала он должен его вернуть`
@@ -206,7 +230,8 @@ class StoreSocketService extends BaseService {
     }
 
     let comment = 'Магазин отменил заказ'
-    if (reason) comment = comment + ` по причине: ${reason}`
+    if (reason)
+      comment = comment + ` по причине: <b>${htmlspecialchars(reason)}</b>`
 
     return await this._setNewStatus(order, Order.statuses.CANCELLED, comment)
   }
@@ -227,6 +252,11 @@ class StoreSocketService extends BaseService {
     const updatedOrder = await this.getOrderById(order.id)
 
     io.of('/admin').emit('order.update', updatedOrder)
+
+    const storeSockets = this.getUserSockets(account.id, '/store')
+    storeSockets.forEach((storeSocket) => {
+      storeSocket.emit('order.update', updatedOrder)
+    })
 
     return updatedOrder
   }

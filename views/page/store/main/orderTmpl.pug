@@ -1,10 +1,11 @@
 script(id="orderTmpl" type="text/x-jquery-tmpl")
   tr(class="status-${status} table-${statuses[status-1].bgColorClass}" data-id="${id}")
     td
-      a(href="/admin/orders/${id}" target="_blank") ${id}
+      a(href="/store/orders/${id}" class="order-link" data-id="${id}" target="_blank") ${id}
     td 
       a(href="tel:${clientPhone}" title="${city.name}<hr>${clientPhone}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true") ${address}
-    td ${summ}&nbsp;р.
+    td 
+      span(title="${comment}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true") ${summ}&nbsp;р.
     . 
       {{if driver}}
     td 
@@ -24,3 +25,7 @@ script(id="noOrdersTmpl" type="text/x-jquery-tmpl")
   tr(class="no-orders")
     td(colspan="10")
       span С текущим фильтром заказов не найдено
+
+script(id="badgeTmpl" type="text/x-jquery-tmpl")
+  span(class="badge float-start bg-${bgColorClass}") 
+    span ${name}

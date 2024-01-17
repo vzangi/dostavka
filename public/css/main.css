@@ -52,3 +52,7 @@ td > i {
 .tooltip hr {
   margin: 2px 0;
 }
+
+.bolder {
+  font-weight: 500;
+}

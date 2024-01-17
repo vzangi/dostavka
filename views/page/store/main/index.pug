@@ -17,12 +17,14 @@ block content
   include ./table
 
   include ./orderAddForm
+  include ./orderChangeForm
 
 prepend content 
   include ../header
 
 block scripts 
-  include ./order-tmpl
+  include ./orderTmpl
+  include ./orderStatusesTmpl
   script(src="/js/store/socket.js")
   script(src="/js/store/filter.js")
   script(src="/js/store/order.js")

@@ -1,58 +1,83 @@
 input:focus,
 input:active {
-	outline: none !important;
-	box-shadow: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-	-webkit-appearance: none;
+  -webkit-appearance: none;
 }
 input[type='number'] {
-	-moz-appearance: textfield;
+  -moz-appearance: textfield;
 }
 
 .statuses {
-	margin-top: 2px;
+  margin-top: 2px;
 }
 .statuses .badge {
-	font-size: 15px;
-	cursor: pointer;
+  font-size: 15px;
+  cursor: pointer;
 }
 .status-checker:not(.checked) {
-	background-color: #bbb !important;
+  background-color: #bbb !important;
 }
 
 @media (max-width: 320px) {
-	.btn-new-title {
-		display: none;
-	}
+  .btn-new-title {
+    display: none;
+  }
 }
 
 .filter-box .input-group {
-	position: relative;
+  position: relative;
 }
 .filter-box .input-group input {
-	padding-right: 30px;
+  padding-right: 30px;
 }
 .input-group .clear-input {
-	position: absolute;
-	right: 0;
-	top: 0;
-	bottom: 0;
-	width: 30px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	cursor: pointer;
-	opacity: 0;
-	transition: all 0.3s ease;
-	z-index: -1;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: -1;
 }
 .input-group .clear-input.active {
-	opacity: 0.5;
-	z-index: 5;
+  opacity: 0.5;
+  z-index: 5;
 }
 .input-group .clear-input.active:hover {
-	opacity: 1;
+  opacity: 1;
+}
+
+.status-dot {
+  width: 100px;
+  display: flex;
+  justify-content: center;
+}
+
+.status-comment {
+  border-left: 2px solid #888;
+  margin: 0 0 0 49px;
+  padding: 0.5rem 0 0.5rem 1rem;
+}
+
+.status-comment p {
+  margin: 0;
+}
+
+.order-users .user-block {
+  min-width: 210px;
+  max-width: 380px;
+}
+
+.status-dot .badge {
+  margin: 0;
 }

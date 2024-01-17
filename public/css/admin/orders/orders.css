@@ -10,7 +10,8 @@
 
 .status-dot {
   width: 100px;
-  text-align: center;
+  display: flex;
+  justify-content: center;
 }
 
 .status-comment {
