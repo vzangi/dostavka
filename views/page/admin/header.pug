@@ -1,8 +1,15 @@
-div
-	include /include/logo
-div(class="user-block text-center")
-	if currentAccount.avatar 
-		img(src="/upload/"+currentAccount.avatar alt="")
-	else 
-		img(src="/images/noname.svg" alt="")
-	div(class="text-center")= currentAccount.username
+header(class="mb-3")
+	div(class="container-fluid")
+		div(class="d-flex align-items-center justify-content-between")
+
+			div(class="pt-2 pb-2") 
+				a(href="/")
+					img(src="/images/dostavka_100.svg" alt="" width="40")
+
+			div 
+				span= currentAccount.username
+
+			div
+				a(href="/logout")
+					button(class="btn btn-dark btn-sm rounded-circle" style="width:40px; height: 40px;") 
+						i(class="bi bi-box-arrow-right")

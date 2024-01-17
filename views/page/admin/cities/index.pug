@@ -21,21 +21,22 @@ block main
       p Нет городов
     else 
       input(class="form-control form-control-sm mb-2" placeholder="Фильтр..." id="filter")
-      table(class="table table-hover bg-white")
-        thead 
-          tr 
-            th Название
-            th 
-        tbody 
-          each city in cities
+      div(class="overflow-auto")
+        table(class="table table-hover bg-white")
+          thead 
             tr 
-              td(data-val=city.name)= city.name 
-              td 
-                div(class="d-flex justify-content-end gap-1")
-                  a(href="/admin/cities/edit/"+city.id class="btn btn-sm btn-primary" title="Редактировать")
-                    i(class="bi bi-pencil-square")
-                  a(href="/admin/cities/delete/"+city.id class="btn btn-sm btn-danger" title="Удалить город")
-                    i(class="bi bi-trash3")
+              th Название
+              th 
+          tbody 
+            each city in cities
+              tr 
+                td(data-val=city.name)= city.name 
+                td 
+                  div(class="d-flex justify-content-end gap-1")
+                    a(href="/admin/cities/edit/"+city.id class="btn btn-sm btn-primary" title="Редактировать")
+                      i(class="bi bi-pencil-square")
+                    a(href="/admin/cities/delete/"+city.id class="btn btn-sm btn-danger" title="Удалить город")
+                      i(class="bi bi-trash3")
 
 block scripts 
   script(src="/js/admin/filter.js")
