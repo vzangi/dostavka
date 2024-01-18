@@ -59,7 +59,8 @@ block main
 				label(class="form-label") Комментарий
 				textarea(class="form-control" rows="4" placeholder="Комментарий" name="comment")= order.comment
 
-			button(class="btn btn-success" type="submit") Изменить
+			div(class="mb-3")
+				button(class="btn btn-success" type="submit") Изменить
 
 block scripts 
 	script(src="/js/admin/orders/edit.js")
