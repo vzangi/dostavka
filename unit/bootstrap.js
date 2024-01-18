@@ -40,9 +40,12 @@ require('./routing')(app)
 // Загрузка роутов сокетов
 require('./socketRouting')(io)
 
+const OrderManager = require('./OrderManager')
+OrderManager.loadWaitingOrders(io)
+
 module.exports = {
-  app,
-  server,
-  io,
-  sequelize,
+	app,
+	server,
+	io,
+	sequelize,
 }

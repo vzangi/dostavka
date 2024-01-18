@@ -56,6 +56,7 @@ class AdminDriverController extends BaseController {
 			}
 			res.redirect('/admin/drivers')
 		} catch (error) {
+			console.log(error)
 			this.page404(res)
 		}
 	}

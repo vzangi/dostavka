@@ -5,144 +5,138 @@ const BaseUserService = require('../../BaseUserService')
 const saltNumber = 10
 
 class AdminDriverService extends BaseUserService {
-  async main() {
-    const drivers = await Driver.findAll({
-      where: {
-        role: Driver.roles.DRIVER,
-      },
-      include: [
-        {
-          model: City,
-        },
-      ],
-      order: [['id', 'desc']],
-    })
+	async main() {
+		const drivers = await Driver.findAll({
+			where: {
+				role: Driver.roles.DRIVER,
+			},
+			include: [
+				{
+					model: City,
+				},
+			],
+			order: [['id', 'desc']],
+		})
 
-    const cities = await City.findAll()
+		const cities = await City.findAll()
 
-    const data = {
-      drivers,
-      cities,
-    }
+		const data = {
+			drivers,
+			cities,
+		}
 
-    return data
-  }
+		return data
+	}
 
-  async addDriverFormData() {
-    const cities = await City.findAll()
-    const data = {
-      cities,
-    }
-    return data
-  }
+	async addDriverFormData() {
+		const cities = await City.findAll()
+		const data = {
+			cities,
+		}
+		return data
+	}
 
-  async addDriver(driverData) {
-    const { username, login, pass, phone, cityId, address, wallet } = driverData
+	async addDriver(driverData) {
+		const { username, login, pass, phone, cityId, address, wallet } = driverData
 
-    driverData.active = !!driverData.active
-    driverData.online = !!driverData.online
+		driverData.active = !!driverData.active
+		driverData.online = !!driverData.online
 
-    if (
-      !username ||
-      !login ||
-      !pass ||
-      !cityId ||
-      !phone ||
-      !address ||
-      !wallet
-    ) {
-      throw new Error('Нет необходимых данных')
-    }
+		if (
+			!username ||
+			!login ||
+			!pass ||
+			!cityId ||
+			!phone ||
+			!address ||
+			!wallet
+		) {
+			throw new Error('Нет необходимых данных')
+		}
 
-    driverData.password = await hash(pass, saltNumber)
-    delete driverData.pass
+		driverData.password = await hash(pass, saltNumber)
+		delete driverData.pass
 
-    const data = {
-      role: Driver.roles.DRIVER,
-      ...driverData,
-    }
+		const data = {
+			role: Driver.roles.DRIVER,
+			...driverData,
+		}
 
-    const driver = await Driver.create(data)
+		const driver = await Driver.create(data)
 
-    return driver
-  }
+		return driver
+	}
 
-  async editDriverFormData(id) {
-    if (!id) {
-      throw new Error('Нет необходимых данных')
-    }
+	async editDriverFormData(id) {
+		if (!id) {
+			throw new Error('Нет необходимых данных')
+		}
 
-    const driver = await Driver.findByPk(id)
+		const driver = await Driver.findByPk(id)
 
-    if (!driver) {
-      throw new Error('Курьер не найден')
-    }
+		if (!driver) {
+			throw new Error('Курьер не найден')
+		}
 
-    const cities = await City.findAll()
+		const cities = await City.findAll()
 
-    const data = {
-      driver,
-      cities,
-    }
+		const data = {
+			driver,
+			cities,
+		}
 
-    return data
-  }
+		return data
+	}
 
-  async editDriver(driverData) {
-    const { id, username, login, pass, phone, cityId, address, wallet } =
-      driverData
+	async editDriver(driverData) {
+		const { id, username, login, pass, phone, cityId, address, wallet } =
+			driverData
 
-    if (
-      !username ||
-      !login ||
-      !id ||
-      !phone ||
-      !cityId ||
-      !address ||
-      !wallet
-    ) {
-      throw new Error('Нет необходимых данных')
-    }
+		console.log(driverData)
 
-    const driver = await Driver.findByPk(id)
+		if (!username || !login || !id || !phone || !cityId || !wallet) {
+			throw new Error('Нет необходимых данных')
+		}
 
-    if (!driver) {
-      throw new Error('Курьер не найден')
-    }
+		const driver = await Driver.findByPk(id)
 
-    driver.active = !!driverData.active
-    driver.online = !!driverData.online
-    driver.username = username
-    driver.login = login
-    driver.phone = phone
-    driver.cityId = cityId
-    driver.address = address
-    driver.wallet = wallet
+		if (!driver) {
+			throw new Error('Курьер не найден')
+		}
 
-    if (pass && pass != '') {
-      driver.password = await hash(pass, saltNumber)
-    }
+		driver.active = !!driverData.active
+		driver.online = !!driverData.online
+		driver.username = username
+		driver.login = login
+		driver.phone = phone
+		driver.cityId = cityId
+		if (address) driver.address = address
+		driver.wallet = wallet
 
-    await driver.save()
+		if (pass && pass != '') {
+			driver.password = await hash(pass, saltNumber)
+		}
 
-    return driver
-  }
+		await driver.save()
 
-  async removeDriver(id) {
-    if (!id) {
-      throw new Error('Нет необходимых данных')
-    }
+		return driver
+	}
 
-    const driver = await Driver.findByPk(id)
+	async removeDriver(id) {
+		if (!id) {
+			throw new Error('Нет необходимых данных')
+		}
 
-    if (!driver) {
-      throw new Error('Курьер не найден')
-    }
+		const driver = await Driver.findByPk(id)
 
-    await this.removeAvatar(driver)
+		if (!driver) {
+			throw new Error('Курьер не найден')
+		}
 
-    await driver.destroy()
-  }
+		await this.removeAvatar(driver)
+
+		await driver.destroy()
+	}
 }
 
 module.exports = AdminDriverService
