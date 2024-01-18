@@ -91,36 +91,12 @@ $(function () {
   }
 
   // Фильтрация ввода в поле телефонного номера
-  addPhoneInput.keydown(phoneKeyDown)
-  changePhoneInput.keydown(phoneKeyDown)
+  addPhoneInput.keyup(keyup)
+  changePhoneInput.keyup(keyup)
 
-  function phoneKeyDown(event) {
-    const { key } = event
-    const val = $(this).val()
-
-    if (key.length > 1) return true
-    if (val == '' && key == '+') return true
-
-    if (val.indexOf('+') == 0 && val.length == 12) return false
-    if (val.indexOf('+') < 0 && val.length == 11) return false
-
-    if ('0123456789'.indexOf(key) >= 0) return true
-
-    return false
+  function keyup(event) {
+    $(this).val(tel($(this).val()))
   }
-
-  // Фильтрация при вставке телефонного номера
-  addPhoneInput.bind('paste', function (event) {
-    const pastedData = event.originalEvent.clipboardData.getData('text')
-    const v = pastedData
-      .split('')
-      .filter((c, i) => {
-        if (i == 0 && c == '+') return true
-        return '0123456789'.indexOf(c) >= 0
-      })
-      .join('')
-    setTimeout(() => addPhoneInput.val(v), 100)
-  })
 
   // Отображение формы редактирования заказа
   $('.order-list').on('click', '.order-link', function (event) {
