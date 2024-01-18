@@ -1,0 +1,46 @@
+script(id="orderTmpl" type="text/x-jquery-tmpl")
+  tr(class="status-${status} table-${statuses[status-1].bgColorClass}" data-id="${id}")
+    td
+      a(href="#" class="order-link" data-id="${id}") ${id}
+    td
+      div(class="d-flex gap-1")
+        . 
+          {{if status == 1}}
+        button(class="btn btn-sm btn-success" title="Взять заказ" data-bs-toggle="tooltip" data-bs-placement="top") 
+          i(class="bi bi-file-play-fill")
+        . 
+          {{/if}}
+        . 
+          {{if status == 2}}
+        button(class="btn btn-sm btn-danger" title="Отказаться от заказа" data-bs-toggle="tooltip" data-bs-placement="top") 
+          i(class="bi bi-x-square")
+        button(class="btn btn-sm btn-primary" title="Заказ был забран" data-bs-toggle="tooltip" data-bs-placement="top") 
+          i(class="bi bi-file-play-fill")
+        . 
+          {{/if}}
+        . 
+          {{if status == 3}}
+        button(class="btn btn-sm btn-warning" title="Вернуть заказ" data-bs-toggle="tooltip" data-bs-placement="top") 
+          i(class="bi bi-skip-backward-btn")
+        button(class="btn btn-sm btn-success" title="Заказ доставлен" data-bs-toggle="tooltip" data-bs-placement="top") 
+          i(class="bi bi-check-square")
+        . 
+          {{/if}}
+    td 
+      a(title="${store.phone}<hr>${store.address}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true") ${store.username}
+    td 
+      a(href="tel:${clientPhone}" title="${clientPhone}<hr>${city.name}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true") ${address}
+    td 
+      span(title="${comment}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true") ${summ}&nbsp;р.
+    td 
+      span(title="${toDateString(createdAt)}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true") ${coolDate}
+
+
+script(id="noOrdersTmpl" type="text/x-jquery-tmpl")
+  tr(class="no-orders")
+    td(colspan="10")
+      span С текущим фильтром заказов не найдено
+
+script(id="badgeTmpl" type="text/x-jquery-tmpl")
+  span(class="badge float-start bg-${bgColorClass}") 
+    span ${name}

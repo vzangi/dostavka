@@ -3,6 +3,7 @@ const Order = require('../../../../models/Order')
 const User = require('../../../../models/User')
 const City = require('../../../../models/City')
 const OrderStatus = require('../../../../models/OrderStatus')
+const OrderPretendent = require('../../../../models/OrderPretendent')
 const { Op } = require('sequelize')
 const { isoDateFromString } = require('../../../../unit/dateHelper')
 const htmlspecialchars = require('htmlspecialchars')
@@ -49,10 +50,20 @@ class AdminOrderService extends BaseService {
 
     const order = await Order.create(orderData)
 
+    let createComment = `Заказ создан администратором`
+    createComment += `<br>Телефон: <b>${clientPhone}</b>`
+    createComment += `<br>Адрес: <b>${address}</b>`
+    if (summ) {
+      createComment += `<br>Сумма: <b>${summ}</b>`
+    }
+    if (comment) {
+      createComment += `<br>Комментарий: <b>${comment}</b>`
+    }
+
     await OrderStatus.create({
       orderId: order.id,
       userId: this.account.id,
-      comment: 'Заказ создан администратором',
+      comment: createComment,
     })
 
     this.io.of('/admin').emit('order.created', order)
@@ -83,21 +94,47 @@ class AdminOrderService extends BaseService {
 
     const order = await this.getOrderById(id)
 
-    order.clientPhone = clientPhone
-    order.summ = summ
-    order.address = address
-    if (orderData.latitude) order.latitude = orderData.latitude
-    if (orderData.longitude) order.latitude = orderData.longitude
-    order.comment = comment
+    const changes = []
 
-    await order.save()
+    if (order.clientPhone != clientPhone) {
+      order.clientPhone = clientPhone
+      changes.push(`Изменён номер клиента: <b>${clientPhone}</b>`)
+    }
 
-    this.io.of('/admin').emit('order.update', order)
+    if (order.summ != summ) {
+      order.summ = summ
+      changes.push(`Изменена сумма заказа: <b>${summ}</b>`)
+    }
 
-    const storeSockets = this.getUserSockets(order.storeId, '/store')
-    storeSockets.forEach((storeSocket) => {
-      storeSocket.emit('order.update', order)
-    })
+    if (order.address != address) {
+      order.address = address
+      changes.push(`Изменён адрес: <b>${address}</b>`)
+      if (orderData.latitude) order.latitude = orderData.latitude
+      if (orderData.longitude) order.longitude = orderData.longitude
+    }
+
+    if (order.comment != comment) {
+      order.comment = comment
+      changes.push(`Изменён комментарий: <b>${comment}</b>`)
+    }
+
+    if (changes.length > 0) {
+      const changesMessage = changes.join('<br>')
+      const updatedOrder = await this._setNewStatus(
+        order,
+        order.status,
+        changesMessage
+      )
+
+      this.io.of('/admin').emit('order.update', updatedOrder)
+
+      const storeSockets = this.getUserSockets(updatedOrder.storeId, '/store')
+      storeSockets.forEach((storeSocket) => {
+        storeSocket.emit('order.update', updatedOrder)
+      })
+
+      return updatedOrder
+    }
 
     return order
   }
@@ -210,6 +247,27 @@ class AdminOrderService extends BaseService {
       throw new Error(`Заказ #${orderId} не найден`)
     }
 
+    if (order.status == Order.statuses.WHAITING) {
+      const pretendents = await OrderPretendent.findAll({
+        where: {
+          orderId,
+          status: [
+            OrderPretendent.statuses.WHAITING,
+            OrderPretendent.statuses.CANCELLED,
+          ],
+        },
+        include: [
+          {
+            model: User,
+            as: 'driver',
+            attributes: ['id', 'username', 'phone', 'avatar', 'address'],
+          },
+        ],
+      })
+
+      order.dataValues.pretendents = pretendents
+    }
+
     return order
   }
 
@@ -222,6 +280,18 @@ class AdminOrderService extends BaseService {
 
     if (order.driverId) {
       throw new Error(`Заказу #${orderId} уже назначен курьер`)
+    }
+
+    if (order.status == Order.statuses.CANCELLED) {
+      throw new Error(
+        `Заказ #${orderId} был отменён. Невозможно назначить для него курьера`
+      )
+    }
+
+    if (order.status == Order.statuses.DELIVERED) {
+      throw new Error(
+        `Заказ #${orderId} был выполнен. Невозможно назначить для него курьера`
+      )
     }
 
     const driver = await User.findByPk(driverId, {

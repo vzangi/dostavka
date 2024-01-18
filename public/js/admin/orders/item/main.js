@@ -1,105 +1,112 @@
 $(function () {
-	const socket = io('/admin')
+  const socket = io('/admin')
 
-	// id текущего заказа
-	const orderId = $('.orderId').text()
+  setTimeout(() => {
+    socket.on('connect', () => location.reload())
+  }, 5000)
 
-	// Кнопки выбора курьера
-	const btnDriverChecker = $('.btn-driver-check')
+  // id текущего заказа
+  const orderId = $('.orderId').text()
 
-	// Поле фильтра курьера
-	const driverFilter = $('#driverFilter')
+  // Кнопки выбора курьера
+  const btnDriverChecker = $('.btn-driver-check')
 
-	// Фильтрация курьеров в модальном окне
-	driverFilter.keyup(function () {
-		const v = $(this).val().toLowerCase()
+  // Поле фильтра курьера
+  const driverFilter = $('#driverFilter')
 
-		btnDriverChecker.each((_, btn) => {
-			if ($(btn).text().toLowerCase().indexOf(v) >= 0) {
-				$(btn).removeClass('d-none')
-			} else {
-				$(btn).addClass('d-none')
-			}
-		})
-	})
+  // Фильтрация курьеров в модальном окне
+  driverFilter.keyup(function () {
+    const v = $(this).val().toLowerCase()
 
-	// Обновление заказа
-	const updateOrder = (order) => {
-		// Показываю или скрываю кнопки управления статусом заказа
-		$('.order-btns .btn').each((_, btn) => {
-			const { showon } = $(btn).data()
-			if (showon.indexOf(order.status) < 0) {
-				$(btn).addClass('d-none')
-			} else {
-				$(btn).removeClass('d-none')
-			}
-		})
+    btnDriverChecker.each((_, btn) => {
+      if ($(btn).text().toLowerCase().indexOf(v) >= 0) {
+        $(btn).removeClass('d-none')
+      } else {
+        $(btn).addClass('d-none')
+      }
+    })
+  })
 
-		$('#orderDataTmpl').tmpl(order).appendTo($('.order-data').empty())
-		$('#orderUsersTmpl').tmpl(order).appendTo($('.order-users').empty())
-		$('#orderStatusesTmpl').tmpl(order).appendTo($('.order-statuses').empty())
+  // Обновление заказа
+  const updateOrder = (order) => {
+    // Показываю или скрываю кнопки управления статусом заказа
+    $('.order-btns .btn').each((_, btn) => {
+      const { showon } = $(btn).data()
+      if (showon.indexOf(order.status) < 0) {
+        $(btn).addClass('d-none')
+      } else {
+        $(btn).removeClass('d-none')
+      }
+    })
 
-		bsTooltips()
-	}
+    $('#orderDataTmpl').tmpl(order).appendTo($('.order-data').empty())
+    $('#orderUsersTmpl').tmpl(order).appendTo($('.order-users').empty())
+    $('#orderStatusesTmpl').tmpl(order).appendTo($('.order-statuses').empty())
+    $('#orderPretendentsTmpl')
+      .tmpl(order)
+      .appendTo($('.order-pretendents').empty())
 
-	// Обработка ответа от сокета
-	const callback = (res) => {
-		const { status, msg, data } = res
-		if (status != 0) {
-			alert(msg)
-			return false
-		}
-		updateOrder(data)
-		return true
-	}
+    bsTooltips()
+  }
 
-	// Получение данных заказа по сокету
-	socket.emit('orders.getbyid', { orderId }, callback)
+  // Обработка ответа от сокета
+  const callback = (res) => {
+    const { status, msg, data } = res
+    if (status != 0) {
+      alert(msg)
+      return false
+    }
+    updateOrder(data)
+    return true
+  }
 
-	// Произошло обновление заказа
-	socket.on('order.update', (order) => {
-		if (order.id == orderId) updateOrder(order)
-	})
+  // Получение данных заказа по сокету
+  socket.emit('orders.getbyid', { orderId }, callback)
 
-	// Выбор одного из курьеров
-	btnDriverChecker.click(function () {
-		const { id, name } = $(this).data()
-		if (!confirm(`Назначить курьера ${name} исполнителем заказа?`)) return
-		socket.emit('driver.set', { orderId, driverId: id }, (res) => {
-			if (!callback(res)) return
-			$('#driverAddForm').modal('hide')
-		})
-	})
+  // Произошло обновление заказа
+  socket.on('order.update', (order) => {
+    if (order.id == orderId) updateOrder(order)
+  })
 
-	// Снять курьера с заказа
-	$('.order-users').on('click', '#revert-driver', function () {
-		if (!confirm('Снять курьера с заказа?')) return
-		const driverId = $(this).data().driverid
-		socket.emit('driver.revert', { orderId, driverId }, callback)
-	})
+  // Выбор одного из курьеров
+  btnDriverChecker.click(function () {
+    const { id, name } = $(this).data()
+    if (!confirm(`Назначить курьера ${name} исполнителем заказа?`)) return
+    socket.emit('driver.set', { orderId, driverId: id }, (res) => {
+      if (!callback(res)) return
+      $('#driverAddForm').modal('hide')
+    })
+  })
 
-	// Отменить заказ
-	$('#cancel-order').click(function () {
-		if (!confirm('Отменить заказ?')) return
-		const reason = prompt('Причина отмены заказа')
-		socket.emit('order.cancel', { orderId, reason }, callback)
-	})
+  // Снять курьера с заказа
+  $('.order-users').on('click', '#revert-driver', function () {
+    if (!confirm('Снять курьера с заказа?')) return
+    const driverId = $(this).data().driverid
+    socket.emit('driver.revert', { orderId, driverId }, callback)
+  })
 
-	// Вернуть заказ
-	$('#reboot-order').click(function () {
-		if (!confirm('Вернуть заказ в работу?')) return
-		socket.emit('order.reboot', { orderId }, callback)
-	})
+  // Отменить заказ
+  $('#cancel-order').click(function () {
+    if (!confirm('Отменить заказ?')) return
+    const reason = prompt('Причина отмены заказа')
+    socket.emit('order.cancel', { orderId, reason }, callback)
+  })
 
-	// Завершить заказ
-	$('#complete-order').click(function () {
-		if (!confirm('Отметить заказ выполненным?')) return
-		socket.emit('order.complete', { orderId }, callback)
-	})
+  // Вернуть заказ
+  $('#reboot-order').click(function () {
+    if (!confirm('Вернуть заказ в работу?')) return
+    socket.emit('order.reboot', { orderId }, callback)
+  })
 
-	// Курьер забрал заказ
-	$('#taked-order').click(function () {
-		if (!confirm('Отметить, что курьер забрал заказ?')) return
-		socket.emit('order.taked', { orderId }, callback)
-	})
+  // Завершить заказ
+  $('#complete-order').click(function () {
+    if (!confirm('Отметить заказ выполненным?')) return
+    socket.emit('order.complete', { orderId }, callback)
+  })
+
+  // Курьер забрал заказ
+  $('#taked-order').click(function () {
+    if (!confirm('Отметить, что курьер забрал заказ?')) return
+    socket.emit('order.taked', { orderId }, callback)
+  })
 })

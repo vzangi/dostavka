@@ -3,7 +3,8 @@ script(id="driverTmpl" type="text/x-jquery-tmpl")
     td ${username}
     td ${login}
     td ${phone}
-    td(class="d-none d-lg-table-cell") ${city.name}
+    td ${city.name}
+    td ${wallet}
     td 
       div(class="d-flex justify-content-end gap-1")
         a(href="/admin/drivers/edit/${id}" class="btn btn-sm btn-primary" title="Редактировать")

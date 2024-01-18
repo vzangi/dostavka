@@ -18,7 +18,11 @@ block main
 
     div(class="order-users")
 
-    div(class="order-statuses")
+    div(class="row")
+      div(class="col-12 col-md-6")
+        div(class="order-statuses")
+      div(class="col-12 col-md-6")
+        div(class="order-pretendents")
 
     include ./item/driverAddForm
 
@@ -26,4 +30,5 @@ block scripts
   include ./item/orderDataTmpl
   include ./item/orderUsersTmpl
   include ./item/orderStatusesTmpl
+  include ./item/orderPretendentsTmpl
   script(src="/js/admin/orders/item/main.js")

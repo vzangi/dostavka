@@ -5,68 +5,71 @@ const cookieTokenName = process.env.TOKEN_COOKIE || 'jwt'
 const maxAge = 1000 * 60 * 60 * 24 * 30 * 12 // год
 
 class AuthController extends BaseController {
+  async loginPage(req, res) {
+    try {
+      const { account } = req
 
-	async loginPage(req, res) {
-		try {
-			const { account } = req
+      if (!account) {
+        return res.render('page/auth/login')
+      }
 
-			if (!account) {
-				return res.render('page/auth/login')
-			}
+      // admin
+      if (account.role == roles.ADMIN) {
+        return res.redirect('/admin')
+      }
 
-			// admin
-			if (account.role == roles.ADMIN) {
-				return res.redirect('/admin')
-			}
+      // driver
+      if (account.role == roles.DRIVER) {
+        return res.redirect('/driver')
+      }
 
-			// driver
-			if (account.role == roles.DRIVER) {
-				return res.redirect('/driver')
-			}
+      // store
+      if (account.role == roles.STORE) {
+        return res.redirect('/store')
+      }
+    } catch (error) {
+      res.redirect('/')
+    }
+  }
 
-			// store
-			if (account.role == roles.STORE) {
-				return res.redirect('/store')
-			}
+  async loginForm(req, res) {
+    try {
+      const { password, login } = req.body
+      const { user, accessToken } = await this.service.loginForm(
+        login,
+        password
+      )
 
-		} catch (error) {
-			res.redirect('/')
-		}
-	}
+      res.cookie(cookieTokenName, accessToken, { maxAge })
 
-	async loginForm(req, res) {
-		try {
-			const { password, login } = req.body
-			const { user, accessToken } = await this.service.loginForm(login, password)
+      res.redirect('/login')
+    } catch (error) {
+      res.render('page/auth/login', {
+        message: error.message,
+      })
+    }
+  }
 
-			res.cookie(cookieTokenName, accessToken, { maxAge })
+  async logout(req, res) {
+    try {
+      const { currentAccount } = res.locals
+      await this.service.logout(currentAccount)
+      res.clearCookie(cookieTokenName)
+      res.redirect('/login')
+    } catch (error) {
+      this.page404(res)
+    }
+  }
 
-			res.redirect('/login')
-		} catch (error) {
-			res.render('page/auth/login', {
-				message: error.message
-			})
-		}
-	}
-
-	async logout(req, res) {
-		try {
-			res.clearCookie(cookieTokenName)
-			res.redirect('/login')
-		} catch (error) {
-			this.page404(res)
-		}
-	}
-
-	async makeAdmin(req, res) {
-		try {
-			const { pass } = req.params
-			await this.service.makeAdmin(pass)
-			res.redirect('/login')
-		} catch (error) {
-			this.page404(res)
-		}
-	}
+  async makeAdmin(req, res) {
+    try {
+      const { pass } = req.params
+      await this.service.makeAdmin(pass)
+      res.redirect('/login')
+    } catch (error) {
+      this.page404(res)
+    }
+  }
 }
 
 module.exports = new AuthController(Service)

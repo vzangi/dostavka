@@ -1,8 +1,20 @@
-div
-	include /include/logo
-div(class="user-block text-center")
-	if currentAccount.avatar 
-		img(src="/uploads/"+currentAccount.avatar alt="")
-	else 
-		img(src="/images/noname.svg" alt="")
-	div(class="text-center")= currentAccount.username
+header(class="mb-3")
+  div(class="container-fluid")
+    div(class="d-flex align-items-center justify-content-between")
+
+      div(class="pt-2 pb-2") 
+        a(href="/" title="На главную" data-bs-toggle="tooltip" data-bs-placement="right")
+          img(src="/images/dostavka_100.svg" alt="" width="40")
+
+      div(class="text-center") 
+        span(title=`${currentAccount.address}<hr>${currentAccount.phone}` data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true")= currentAccount.username
+        div
+          a(href='#')
+            span Баланс: 
+            span= currentAccount.wallet
+            span  р.
+
+      div
+        a(href="/logout")
+          button(class="btn btn-dark btn-sm rounded-circle" title="Выход" data-bs-toggle="tooltip" data-bs-placement="left" style="width:40px; height: 40px;") 
+            i(class="bi bi-box-arrow-right")

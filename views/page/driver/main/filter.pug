@@ -1,0 +1,45 @@
+mixin statusChecker(id, name, cls)
+  span(class=`badge status-checker text-light status-${id} bg-${cls}` data-id=id)= name
+
+div(class="filter-box" style="display:none1")
+  div(class="container-fluid ")
+    div(class="bg-secondary rounded p-2" )
+      div(class="row")
+
+        div(class="col-md-6 col-lg-2")
+          div(class="mb-2 mb-lg-0")
+            div(class="input-group input-group-sm")
+              span(class="input-group-text") 
+                i(class="bi bi-geo-alt-fill")
+              input(class="form-control" id="delivery-address" placeholder="Адрес доставки...")
+              div(class="clear-input" title="Очистить поле" data-bs-toggle="tooltip" data-bs-placement="top")
+                i(class="bi bi-x-circle")
+
+        div(class="col-md-6 col-lg-2")
+          div(class="mb-2 mb-lg-0")
+            div(class="input-group input-group-sm")
+              span(class="input-group-text") 
+                i(class="bi bi-calendar-check")
+              input(type="text" class="form-control" placeholder="Дата заказа" id="date-from")
+              div(class="clear-input" title="Очистить поле" data-bs-toggle="tooltip" data-bs-placement="top")
+                i(class="bi bi-x-circle")
+
+        div(class="col-12 col-md-6 col-lg-6")
+          div(class="mb-2 mb-md-0 h-100")
+            h6(class="text-light d-lg-none") Статус: 
+            div(class="statuses d-flex align-items-center flex-wrap gap-1")
+              +statusChecker(1, 'Ожидает', 'warning')
+              +statusChecker(2, 'Принят', 'primary')
+              +statusChecker(3, 'В пути', 'info')
+              +statusChecker(4, 'Выполнен', 'success')
+              +statusChecker(5, 'Отменён', 'danger')
+
+        div(class="col-12 col-md-6 col-lg-2")
+          h6(class="d-none d-md-block d-lg-none") &nbsp; 
+          div(class="text-end")
+            button(class="btn btn-dark btn-sm btn-start-filter w-100 w-md-auto") 
+              span(class="me-2") Применить
+              span(class="d-lg-none") фильтр 
+              i(class="bi bi-filter")
+
+    hr

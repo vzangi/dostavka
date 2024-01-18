@@ -1,0 +1,15 @@
+script(id="orderPretendentTmpl" type="text/x-jquery-tmpl")
+	div(class="pretendent-item")
+		p
+			span(title="${driver.phone}<hr>${driver.address}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true") ${driver.username}
+
+script(id="orderPretendentsTmpl" type="text/x-jquery-tmpl")
+	div(class="pb-3")
+		hr
+		h5 Претенденты на заказ
+
+		. 
+			{{each(i ,ps) pretendents }}
+				{{tmpl(ps) '#orderPretendentTmpl'}}
+		. 
+			{{/each}}

@@ -1,94 +1,98 @@
 $(function () {
-	const socket = io('/admin')
+  const socket = io('/admin')
 
-	const storeTmpl = $('#storeTmpl')
-	const noStoresTmpl = $('#noStoresTmpl')
-	const badgeFilterTmpl = $('#badgeFilterTmpl')
+  setTimeout(() => {
+    socket.on('connect', filter)
+  }, 5000)
 
-	const storesListBox = $('.stores-list')
-	const filterBtn = $('.btn-filter')
-	const filterBox = $('.filter-box')
+  const storeTmpl = $('#storeTmpl')
+  const noStoresTmpl = $('#noStoresTmpl')
+  const badgeFilterTmpl = $('#badgeFilterTmpl')
 
-	const citiesFilterBox = $('.cities')
-	const btnCityChecker = $('.btn-city-check')
-	const cityFilter = $('#cityFilter')
+  const storesListBox = $('.stores-list')
+  const filterBtn = $('.btn-filter')
+  const filterBox = $('.filter-box')
 
-	const btnStartFilter = $('.btn-start-filter')
+  const citiesFilterBox = $('.cities')
+  const btnCityChecker = $('.btn-city-check')
+  const cityFilter = $('#cityFilter')
 
-	// Запуск фильтрации курьеров
-	function filter() {
-		const filterData = {}
+  const btnStartFilter = $('.btn-start-filter')
 
-		filterData.cities = citiesFilterBox
-			.find('.city')
-			.map((_, sc) => $(sc).data().id)
-			.toArray()
+  // Запуск фильтрации курьеров
+  function filter() {
+    const filterData = {}
 
-		filterData.actives = $('.actives .btn-check')
-			.filter((_, bc) => bc.checked)
-			.map((_, bc) => $(bc).data().value)
-			.toArray()
+    filterData.cities = citiesFilterBox
+      .find('.city')
+      .map((_, sc) => $(sc).data().id)
+      .toArray()
 
-		const phone = $('#phone').val()
-		if (phone != '') {
-			filterData.phone = phone
-		}
+    filterData.actives = $('.actives .btn-check')
+      .filter((_, bc) => bc.checked)
+      .map((_, bc) => $(bc).data().value)
+      .toArray()
 
-		const name = $('#name').val()
-		if (name != '') {
-			filterData.name = name
-		}
+    const phone = $('#phone').val()
+    if (phone != '') {
+      filterData.phone = phone
+    }
 
-		// Получение списка магазинов через сокет
-		socket.emit('stores.get', filterData, (res) => {
-			const { status, msg } = res
-			if (status != 0) return alert(msg)
+    const name = $('#name').val()
+    if (name != '') {
+      filterData.name = name
+    }
 
-			const { data } = res
+    // Получение списка магазинов через сокет
+    socket.emit('stores.get', filterData, (res) => {
+      const { status, msg } = res
+      if (status != 0) return alert(msg)
 
-			if (data.length == 0) {
-				return noStoresTmpl.tmpl().appendTo(storesListBox.empty())
-			}
+      const { data } = res
 
-			storeTmpl.tmpl(data).appendTo(storesListBox.empty())
+      if (data.length == 0) {
+        return noStoresTmpl.tmpl().appendTo(storesListBox.empty())
+      }
 
-			bsTooltips()
-		})
-	}
+      storeTmpl.tmpl(data).appendTo(storesListBox.empty())
 
-	// Клик на кнопке запуск фильтрации
-	btnStartFilter.click(filter)
+      bsTooltips()
+    })
+  }
 
-	// Открыть блок фильтра
-	filterBtn.click(function () {
-		filterBox.slideToggle()
-	})
+  // Клик на кнопке запуск фильтрации
+  btnStartFilter.click(filter)
 
-	// Выбор города в модальной форме фильтра
-	btnCityChecker.click(function () {
-		const { id, name } = $(this).data()
-		$(this).hide()
-		badgeFilterTmpl.tmpl({ id, name, cls: 'city' }).prependTo(citiesFilterBox)
-	})
+  // Открыть блок фильтра
+  filterBtn.click(function () {
+    filterBox.slideToggle()
+  })
 
-	// Удаление города из списка фильтра
-	citiesFilterBox.on('click', '.remove-city', function () {
-		const { id } = $(this).parent().data()
-		$(this).parent().remove()
-		$(`.btn-city-check[data-id=${id}]`).show()
-		$('.tooltip').remove()
-	})
+  // Выбор города в модальной форме фильтра
+  btnCityChecker.click(function () {
+    const { id, name } = $(this).data()
+    $(this).hide()
+    badgeFilterTmpl.tmpl({ id, name, cls: 'city' }).prependTo(citiesFilterBox)
+  })
 
-	// Фильтрация городов в модальном окне
-	cityFilter.keyup(function () {
-		const v = $(this).val().toLowerCase()
+  // Удаление города из списка фильтра
+  citiesFilterBox.on('click', '.remove-city', function () {
+    const { id } = $(this).parent().data()
+    $(this).parent().remove()
+    $(`.btn-city-check[data-id=${id}]`).show()
+    $('.tooltip').remove()
+  })
 
-		btnCityChecker.each((_, btn) => {
-			if ($(btn).text().toLowerCase().indexOf(v) >= 0) {
-				$(btn).removeClass('d-none')
-			} else {
-				$(btn).addClass('d-none')
-			}
-		})
-	})
+  // Фильтрация городов в модальном окне
+  cityFilter.keyup(function () {
+    const v = $(this).val().toLowerCase()
+
+    btnCityChecker.each((_, btn) => {
+      if ($(btn).text().toLowerCase().indexOf(v) >= 0) {
+        $(btn).removeClass('d-none')
+      } else {
+        $(btn).addClass('d-none')
+      }
+    })
+  })
 })

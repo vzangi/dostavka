@@ -1,99 +1,103 @@
 $(function () {
-	const socket = io('/admin')
+  const socket = io('/admin')
 
-	const driverTmpl = $('#driverTmpl')
-	const noDriversTmpl = $('#noDriversTmpl')
-	const badgeFilterTmpl = $('#badgeFilterTmpl')
+  setTimeout(() => {
+    socket.on('connect', filter)
+  }, 5000)
 
-	const driversListBox = $('.drivers-list')
-	const filterBtn = $('.btn-filter')
-	const filterBox = $('.filter-box')
+  const driverTmpl = $('#driverTmpl')
+  const noDriversTmpl = $('#noDriversTmpl')
+  const badgeFilterTmpl = $('#badgeFilterTmpl')
 
-	const citiesFilterBox = $('.cities')
-	const btnCityChecker = $('.btn-city-check')
-	const cityFilter = $('#cityFilter')
+  const driversListBox = $('.drivers-list')
+  const filterBtn = $('.btn-filter')
+  const filterBox = $('.filter-box')
 
-	const btnStartFilter = $('.btn-start-filter')
+  const citiesFilterBox = $('.cities')
+  const btnCityChecker = $('.btn-city-check')
+  const cityFilter = $('#cityFilter')
 
-	// Запуск фильтрации курьеров
-	function filter() {
-		const filterData = {}
+  const btnStartFilter = $('.btn-start-filter')
 
-		filterData.cities = citiesFilterBox
-			.find('.city')
-			.map((_, sc) => $(sc).data().id)
-			.toArray()
+  // Запуск фильтрации курьеров
+  function filter() {
+    const filterData = {}
 
-		filterData.actives = $('.actives .btn-check')
-			.filter((_, bc) => bc.checked)
-			.map((_, bc) => $(bc).data().value)
-			.toArray()
+    filterData.cities = citiesFilterBox
+      .find('.city')
+      .map((_, sc) => $(sc).data().id)
+      .toArray()
 
-		filterData.onlines = $('.onlines .btn-check')
-			.filter((_, bc) => bc.checked)
-			.map((_, bc) => $(bc).data().value)
-			.toArray()
+    filterData.actives = $('.actives .btn-check')
+      .filter((_, bc) => bc.checked)
+      .map((_, bc) => $(bc).data().value)
+      .toArray()
 
-		const phone = $('#phone').val()
-		if (phone != '') {
-			filterData.phone = phone
-		}
+    filterData.onlines = $('.onlines .btn-check')
+      .filter((_, bc) => bc.checked)
+      .map((_, bc) => $(bc).data().value)
+      .toArray()
 
-		const name = $('#name').val()
-		if (name != '') {
-			filterData.name = name
-		}
+    const phone = $('#phone').val()
+    if (phone != '') {
+      filterData.phone = phone
+    }
 
-		// Получение списка курьеров через сокет
-		socket.emit('drivers.get', filterData, (res) => {
-			const { status, msg } = res
-			if (status != 0) return alert(msg)
+    const name = $('#name').val()
+    if (name != '') {
+      filterData.name = name
+    }
 
-			const { data } = res
+    // Получение списка курьеров через сокет
+    socket.emit('drivers.get', filterData, (res) => {
+      const { status, msg } = res
+      if (status != 0) return alert(msg)
 
-			if (data.length == 0) {
-				return noDriversTmpl.tmpl().appendTo(driversListBox.empty())
-			}
+      const { data } = res
 
-			driverTmpl.tmpl(data).appendTo(driversListBox.empty())
+      if (data.length == 0) {
+        return noDriversTmpl.tmpl().appendTo(driversListBox.empty())
+      }
 
-			bsTooltips()
-		})
-	}
+      driverTmpl.tmpl(data).appendTo(driversListBox.empty())
 
-	// Клик на кнопке запуск фильтрации
-	btnStartFilter.click(filter)
+      bsTooltips()
+    })
+  }
 
-	// Открыть блок фильтра
-	filterBtn.click(function () {
-		filterBox.slideToggle()
-	})
+  // Клик на кнопке запуск фильтрации
+  btnStartFilter.click(filter)
 
-	// Выбор города в модальной форме фильтра
-	btnCityChecker.click(function () {
-		const { id, name } = $(this).data()
-		$(this).hide()
-		badgeFilterTmpl.tmpl({ id, name, cls: 'city' }).prependTo(citiesFilterBox)
-	})
+  // Открыть блок фильтра
+  filterBtn.click(function () {
+    filterBox.slideToggle()
+  })
 
-	// Удаление города из списка фильтра
-	citiesFilterBox.on('click', '.remove-city', function () {
-		const { id } = $(this).parent().data()
-		$(this).parent().remove()
-		$(`.btn-city-check[data-id=${id}]`).show()
-		$('.tooltip').remove()
-	})
+  // Выбор города в модальной форме фильтра
+  btnCityChecker.click(function () {
+    const { id, name } = $(this).data()
+    $(this).hide()
+    badgeFilterTmpl.tmpl({ id, name, cls: 'city' }).prependTo(citiesFilterBox)
+  })
 
-	// Фильтрация городов в модальном окне
-	cityFilter.keyup(function () {
-		const v = $(this).val().toLowerCase()
+  // Удаление города из списка фильтра
+  citiesFilterBox.on('click', '.remove-city', function () {
+    const { id } = $(this).parent().data()
+    $(this).parent().remove()
+    $(`.btn-city-check[data-id=${id}]`).show()
+    $('.tooltip').remove()
+  })
 
-		btnCityChecker.each((_, btn) => {
-			if ($(btn).text().toLowerCase().indexOf(v) >= 0) {
-				$(btn).removeClass('d-none')
-			} else {
-				$(btn).addClass('d-none')
-			}
-		})
-	})
+  // Фильтрация городов в модальном окне
+  cityFilter.keyup(function () {
+    const v = $(this).val().toLowerCase()
+
+    btnCityChecker.each((_, btn) => {
+      if ($(btn).text().toLowerCase().indexOf(v) >= 0) {
+        $(btn).removeClass('d-none')
+      } else {
+        $(btn).addClass('d-none')
+      }
+    })
+  })
 })

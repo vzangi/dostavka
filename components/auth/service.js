@@ -4,68 +4,81 @@ const User = require('../../models/User')
 const saltNumber = 10
 
 class AuthService {
-	async loginForm(login, password) {
-		if (!login || !password) {
-			throw new Error('Нет необходимых данных')
-		}
+  async loginForm(login, password) {
+    if (!login || !password) {
+      throw new Error('Нет необходимых данных')
+    }
 
-		const user = await User.findOne({
-			where: { login },
-		})
+    const user = await User.findOne({
+      where: { login },
+    })
 
-		if (!user) {
-			throw new Error('Неверный логин или пароль')
-		}
+    if (!user) {
+      throw new Error('Неверный логин или пароль')
+    }
 
-		if (!user.active) {
-			throw new Error('Пользователь заблокирован')
-		}
+    if (!user.active) {
+      throw new Error('Пользователь заблокирован')
+    }
 
-		const match = await compare(password, user.password)
+    const match = await compare(password, user.password)
 
-		if (!match) {
-			throw new Error('Неверный логин или пароль')
-		}
+    if (!match) {
+      throw new Error('Неверный логин или пароль')
+    }
 
-		// Создаю токен авторизации
-		const accessToken = createToken(user)
+    // Создаю токен авторизации
+    const accessToken = createToken(user)
 
-		return {
-			user,
-			accessToken,
-		}
-	}
+    // Указываю, что пользователь начал работу
+    user.online = true
+    await user.save()
 
-	async makeAdmin(pass) {
-		if (!pass) {
-			throw new Error('Нет необходимых данных')
-		}
+    return {
+      user,
+      accessToken,
+    }
+  }
 
-		if (pass != process.env.ADMIN_PASS) {
-			throw new Error('Неверный пароль')
-		}
+  async logout(account) {
+    if (!account) {
+      throw new Error('Не авторизован')
+    }
 
-		const username = 'admin'
+    account.online = false
+    await account.save()
+  }
 
-		const hasAdmin = await User.findOne({
-			where: { username },
-		})
+  async makeAdmin(pass) {
+    if (!pass) {
+      throw new Error('Нет необходимых данных')
+    }
 
-		if (hasAdmin) {
-			throw new Error('Админ уже создан')
-		}
+    if (pass != process.env.ADMIN_PASS) {
+      throw new Error('Неверный пароль')
+    }
 
-		const password = await hash(pass, saltNumber)
+    const username = 'admin'
 
-		const data = {
-			username,
-			login: username,
-			password,
-			role: User.roles.ADMIN,
-		}
+    const hasAdmin = await User.findOne({
+      where: { username },
+    })
 
-		await User.create(data)
-	}
+    if (hasAdmin) {
+      throw new Error('Админ уже создан')
+    }
+
+    const password = await hash(pass, saltNumber)
+
+    const data = {
+      username,
+      login: username,
+      password,
+      role: User.roles.ADMIN,
+    }
+
+    await User.create(data)
+  }
 }
 
 module.exports = AuthService

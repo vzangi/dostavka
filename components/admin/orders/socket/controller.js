@@ -37,6 +37,7 @@ class AdminOrderController extends BaseSocketController {
       const data = await this.service.getOrderById(orderId)
       callback({ status: 0, data })
     } catch (error) {
+      console.log(error)
       callback({ status: 1, msg: error.message })
     }
   }

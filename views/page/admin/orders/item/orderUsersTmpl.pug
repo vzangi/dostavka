@@ -26,9 +26,14 @@ script(id="orderUsersTmpl" type="text/x-jquery-tmpl")
 					{{/if}}
 			. 
 				{{else}}
+				{{if status < 4}}
 			div
 				button(class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#driverAddForm") Назначить вручную
 			. 
+				{{else}}
+				Не назначен
+			. 
+				{{/if}}
 				{{/if}}
 
 		i(class="bi bi-arrow-left-right text-secondary")

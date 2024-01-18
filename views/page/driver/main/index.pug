@@ -1,14 +1,27 @@
-extends /layout/treeRows
+extends /layout/main
 
-block header 
-	include ../header
+block head
+  script(src="/js/base.js")
+  script(src="/js/jquery.tmpl.min.js")
+  script(src="/js/2gis/geocoder.js")
+  script(src="/socket.io/socket.io.js")
+  link(rel="stylesheet" href="/css/driver/main.css")
 
-mixin btn(name, link)
-	div(class="m-2")
-		a(href=link class="btn btn-dark def-width")= name
+  link(rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css")
+  link(href="/css/ui/datepicker.css" rel="stylesheet")
+  script(src="https://code.jquery.com/ui/1.13.2/jquery-ui.js")
 
-block main
-	div(class="container text-center mb-5")
-		+btn('Заказы', '/driver/orders')
-		hr(style="max-width:200px;margin:1rem auto;")
-		+btn('Выход', '/logout')
+block content
+  include ./header
+  include ./filter
+  include ./table
+
+prepend content 
+  include ../header
+
+block scripts 
+  include ./orderTmpl
+  include ./orderStatusesTmpl
+  script(src="/js/driver/socket.js")
+  script(src="/js/driver/filter.js")
+  //-   script(src="/js/store/order.js")

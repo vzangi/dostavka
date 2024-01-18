@@ -38,4 +38,19 @@ module.exports = (io) => {
       require('../components/store/socket/router')(io, socket)
     }
   })
+
+  // Пытаюсь получить пользователя по токену jwt
+  io.of('/driver').use(validateTokenInSocket)
+  io.of('/driver').use(userToSocket)
+
+  // Подключение к сокету
+  io.of('/driver').on('connection', (socket) => {
+    const { account } = socket
+
+    // Курьер
+    if (account && account.role == roles.DRIVER) {
+      // Роуты курьеров
+      require('../components/driver/socket/router')(io, socket)
+    }
+  })
 }

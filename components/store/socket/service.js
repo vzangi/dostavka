@@ -26,15 +26,29 @@ class StoreSocketService extends BaseService {
       delete orderData.longitude
     }
 
+    if (summ == '') {
+      delete orderData.summ
+    }
+
     orderData.storeId = store.id
     orderData.cityId = store.cityId
 
     const order = await Order.create(orderData)
 
+    let createComment = `Заказ создан`
+    createComment += `<br>Телефон: <b>${clientPhone}</b>`
+    createComment += `<br>Адрес: <b>${address}</b>`
+    if (summ) {
+      createComment += `<br>Сумма: <b>${summ}</b>`
+    }
+    if (comment) {
+      createComment += `<br>Комментарий: <b>${comment}</b>`
+    }
+
     await OrderStatus.create({
       orderId: order.id,
       userId: store.id,
-      comment: 'Заказ создан',
+      comment: createComment,
     })
 
     this.io.of('/admin').emit('order.created', order)
@@ -79,21 +93,48 @@ class StoreSocketService extends BaseService {
       throw new Error('Заказ выполнен. Редактирование запрещено.')
     }
 
-    order.clientPhone = clientPhone
-    order.summ = summ
-    order.address = address
-    if (orderData.latitude) order.latitude = orderData.latitude
-    if (orderData.longitude) order.longitude = orderData.longitude
-    order.comment = comment
+    const changes = []
 
-    await order.save()
+    if (order.clientPhone != clientPhone) {
+      order.clientPhone = clientPhone
+      changes.push(`Изменён номер клиента: <b>${clientPhone}</b>`)
+    }
 
-    this.io.of('/admin').emit('order.update', order)
+    if (order.summ != summ) {
+      order.summ = summ
+      changes.push(`Изменена сумма заказа: <b>${summ}</b>`)
+    }
 
-    const storeSockets = this.getUserSockets(store.id, '/store')
-    storeSockets.forEach((storeSocket) => {
-      storeSocket.emit('order.update', order)
-    })
+    if (order.address != address) {
+      order.address = address
+      changes.push(`Изменён адрес: <b>${address}</b>`)
+      if (orderData.latitude) order.latitude = orderData.latitude
+      if (orderData.longitude) order.longitude = orderData.longitude
+    }
+
+    if (order.comment != comment) {
+      order.comment = comment
+      changes.push(`Изменён комментарий: <b>${comment}</b>`)
+    }
+
+    // Если были изменения - сообщаем об этом
+    if (changes.length > 0) {
+      const changesMessage = changes.join('<br>')
+      const updatedOrder = await this._setNewStatus(
+        order,
+        order.status,
+        changesMessage
+      )
+
+      this.io.of('/admin').emit('order.update', updatedOrder)
+
+      const storeSockets = this.getUserSockets(store.id, '/store')
+      storeSockets.forEach((storeSocket) => {
+        storeSocket.emit('order.update', updatedOrder)
+      })
+
+      return updatedOrder
+    }
 
     return order
   }

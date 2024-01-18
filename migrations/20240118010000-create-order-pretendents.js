@@ -4,7 +4,7 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable(
-      'orderStatuses',
+      'orderPretendents',
       {
         id: {
           type: Sequelize.INTEGER,
@@ -26,7 +26,7 @@ module.exports = {
             key: 'id',
           },
         },
-        userId: {
+        driverId: {
           type: Sequelize.INTEGER,
           onDelete: 'CASCADE',
           onUpdate: 'NO ACTION',
@@ -34,9 +34,6 @@ module.exports = {
             model: 'users',
             key: 'id',
           },
-        },
-        comment: {
-          type: Sequelize.TEXT,
         },
         createdAt: {
           type: Sequelize.DATE,
@@ -55,6 +52,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('orderStatuses')
+    await queryInterface.dropTable('orderPretendents')
   },
 }
