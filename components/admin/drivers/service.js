@@ -92,8 +92,6 @@ class AdminDriverService extends BaseUserService {
 		const { id, username, login, pass, phone, cityId, address, wallet } =
 			driverData
 
-		console.log(driverData)
-
 		if (!username || !login || !id || !phone || !cityId || !wallet) {
 			throw new Error('Нет необходимых данных')
 		}
