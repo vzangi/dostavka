@@ -7,6 +7,7 @@ const OrderPretendent = require('../../../../models/OrderPretendent')
 const { Op } = require('sequelize')
 const { isoDateFromString } = require('../../../../unit/dateHelper')
 const htmlspecialchars = require('htmlspecialchars')
+const OrderManager = require('../../../../unit/OrderManager')
 
 class AdminOrderService extends BaseService {
   async createOrder(orderData) {
@@ -65,6 +66,9 @@ class AdminOrderService extends BaseService {
       userId: this.account.id,
       comment: createComment,
     })
+
+    // Отправляю заказ в менеджер
+    await OrderManager.startFounding(order)
 
     this.io.of('/admin').emit('order.created', order)
 
@@ -132,6 +136,17 @@ class AdminOrderService extends BaseService {
       storeSockets.forEach((storeSocket) => {
         storeSocket.emit('order.update', updatedOrder)
       })
+
+      // Статусы курьеров связанных с заказом
+      const statuses = [OrderPretendent.statuses.ACCEPTED]
+
+      // Если заказ ещё не взят, то добавляю также ожидающих курьеров
+      if (updatedOrder.status == Order.statuses.WHAITING) {
+        statuses.push(OrderPretendent.statuses.WHAITING)
+      }
+
+      // Уведомляю курьеров об изменении заказа
+      this._notifyDrivers(updatedOrder, 'order.update', statuses)
 
       return updatedOrder
     }
@@ -314,11 +329,36 @@ class AdminOrderService extends BaseService {
 
     order.driverId = driverId
 
-    return await this._setNewStatus(
+    const updatedOrder = await this._setNewStatus(
       order,
       Order.statuses.ACCEPTED,
       `Администратор назначил курьера вручную - ${driver.username}`
     )
+
+    const orderPretendent = await OrderPretendent.findOne({
+      where: {
+        orderId,
+        driverId,
+      },
+    })
+
+    if (orderPretendent) {
+      orderPretendent.status = OrderPretendent.statuses.ACCEPTED
+      await orderPretendent.save()
+    } else {
+      await orderPretendent.create({
+        orderId,
+        driverId,
+        status: OrderPretendent.statuses.ACCEPTED,
+      })
+    }
+
+    await this._notifyDrivers(updatedOrder, 'order.accepted', [
+      OrderPretendent.statuses.WHAITING,
+      OrderPretendent.statuses.ACCEPTED,
+    ])
+
+    return updatedOrder
   }
 
   async revertDriver(orderId, driverId) {
@@ -334,11 +374,39 @@ class AdminOrderService extends BaseService {
 
     order.driverId = null
 
-    return await this._setNewStatus(
+    const updatedOrder = await this._setNewStatus(
       order,
       Order.statuses.WHAITING,
       'Курьер снят с заказа администратором'
     )
+
+    await OrderPretendent.destroy({
+      where: {
+        orderId,
+        status: OrderPretendent.statuses.WHAITING,
+      },
+    })
+
+    await this._notifyDrivers(updatedOrder, 'order.revert', [
+      OrderPretendent.statuses.ACCEPTED,
+    ])
+
+    const pretendent = await OrderPretendent.findOne({
+      where: {
+        orderId,
+        driverId,
+        status: OrderPretendent.statuses.ACCEPTED,
+      },
+    })
+
+    if (pretendent) {
+      pretendent.status = OrderPretendent.statuses.CANCELLED
+      await pretendent.save()
+    }
+
+    OrderManager.startFounding(updatedOrder)
+
+    return updatedOrder
   }
 
   async takedOrder(orderId) {
@@ -352,11 +420,17 @@ class AdminOrderService extends BaseService {
       throw new Error(`Заказу #${orderId} не назначен курьер`)
     }
 
-    return await this._setNewStatus(
+    const updatedOrder = await this._setNewStatus(
       order,
       Order.statuses.TAKED,
       'Администратор подтвердил, что курьер забрал заказ'
     )
+
+    await this._notifyDrivers(updatedOrder, 'order.update', [
+      OrderPretendent.statuses.ACCEPTED,
+    ])
+
+    return updatedOrder
   }
 
   async cancelOrder(orderId, reason) {
@@ -366,11 +440,40 @@ class AdminOrderService extends BaseService {
       throw new Error(`Заказ #${orderId} уже отменён`)
     }
 
+    if (order.status == Order.statuses.DELIVERED) {
+      throw new Error(`Заказ #${orderId} уже выполнен, его нельзя отменить`)
+    }
+
     let comment = 'Администратор отменил заказа'
     if (reason)
       comment = comment + ` по причине: <b>${htmlspecialchars(reason)}</b>`
 
-    return await this._setNewStatus(order, Order.statuses.CANCELLED, comment)
+    const oldStatus = order.status
+
+    const updateOrder = await this._setNewStatus(
+      order,
+      Order.statuses.CANCELLED,
+      comment
+    )
+
+    // Если заказ был на ожидании
+    if (oldStatus == Order.statuses.WHAITING) {
+      // То надо уведомить всех курьеров,
+      // которым было отправлено приглашение,
+      // что заказ изменил статус
+
+      await this._notifyDrivers(updateOrder, 'order.cancelled', [
+        OrderPretendent.statuses.WHAITING,
+        OrderPretendent.statuses.ACCEPTED,
+      ])
+    } else {
+      // Уведомляю водителя, что его заказ отменился
+      await this._notifyDrivers(updateOrder, 'order.taked.cancelled', [
+        OrderPretendent.statuses.ACCEPTED,
+      ])
+    }
+
+    return updateOrder
   }
 
   async completeOrder(orderId) {
@@ -380,11 +483,17 @@ class AdminOrderService extends BaseService {
       throw new Error(`Заказ #${orderId} уже завершён`)
     }
 
-    return await this._setNewStatus(
+    const updatedOrder = await this._setNewStatus(
       order,
       Order.statuses.DELIVERED,
       'Администратор подтвердил выполнение заказа'
     )
+
+    await this._notifyDrivers(updatedOrder, 'order.complete', [
+      OrderPretendent.statuses.ACCEPTED,
+    ])
+
+    return updatedOrder
   }
 
   async rebootOrder(orderId) {
@@ -427,10 +536,35 @@ class AdminOrderService extends BaseService {
 
     const storeSockets = this.getUserSockets(order.storeId, '/store')
     storeSockets.forEach((storeSocket) => {
-      storeSocket.emit('order.update', order)
+      storeSocket.emit('order.update', updatedOrder)
     })
 
     return updatedOrder
+  }
+
+  async _notifyDrivers(order, eventName, status) {
+    console.log(
+      'Ищу курьеров, связанных с этим заказом и уведомляю о событии: ',
+      eventName
+    )
+    // Ищу курьеров, связанных с этим заказом'
+    const pretendents = await OrderPretendent.findAll({
+      where: {
+        orderId: order.id,
+        status,
+      },
+    })
+
+    console.log('Найдено курьеров: ', pretendents.length)
+
+    for (const index in pretendents) {
+      const pretendent = pretendents[index]
+      console.log('Уведомляю курьера о событии: ', pretendent.driverId)
+      const sockets = this.getUserSockets(pretendent.driverId, '/driver')
+      sockets.forEach((socket) => {
+        socket.emit(eventName, order)
+      })
+    }
   }
 }
 

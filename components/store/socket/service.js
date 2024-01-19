@@ -6,6 +6,7 @@ const OrderStatus = require('../../../models/OrderStatus')
 const { Op } = require('sequelize')
 const { isoBetweenDates } = require('../../../unit/dateHelper')
 const htmlspecialchars = require('htmlspecialchars')
+const OrderManager = require('../../../unit/OrderManager')
 
 class StoreSocketService extends BaseService {
   async createOrder(orderData) {
@@ -50,6 +51,9 @@ class StoreSocketService extends BaseService {
       userId: store.id,
       comment: createComment,
     })
+
+    // Отправляю заказ в менеджер
+    await OrderManager.startFounding(order)
 
     this.io.of('/admin').emit('order.created', order)
 

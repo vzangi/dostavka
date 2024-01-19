@@ -35,6 +35,7 @@ class DriverSocketService extends BaseService {
       }
     }
 
+    // Получение заказов, в которых участвует курьер
     const orders = await Order.findAll({
       where,
       order: [['id', 'desc']],
@@ -52,16 +53,52 @@ class DriverSocketService extends BaseService {
         {
           model: City,
         },
-        // {
-        //   model: OrderPretendent,
-        //   where: {
-        //     driverId: driver.id,
-        //   },
-        // },
       ],
     })
 
-    return orders
+    delete where.driverId
+    where.status = Order.statuses.WHAITING
+
+    // Получение новых заказов, в которых курьер может поучаствовать
+    const whaitingOrders = await Order.findAll({
+      where,
+      order: [['id', 'desc']],
+      include: [
+        {
+          model: User,
+          as: 'store',
+          attributes: ['username', 'address', 'phone'],
+        },
+        {
+          model: User,
+          as: 'driver',
+          attributes: ['username', 'phone', 'address'],
+        },
+        {
+          model: City,
+        },
+        {
+          model: OrderPretendent,
+          where: {
+            driverId: driver.id,
+            status: [
+              OrderPretendent.statuses.WHAITING,
+              OrderPretendent.statuses.ACCEPTED,
+            ],
+          },
+        },
+      ],
+    })
+
+    // Сращиваю заказы
+    const fullOrders = orders.concat(whaitingOrders)
+
+    // Сортирую по дате
+    fullOrders.sort((a, b) =>
+      a.createdAt === b.createdAt ? 0 : a.createdAt < b.createdAt ? 1 : -1
+    )
+
+    return fullOrders
   }
 
   async getOrderById(orderId) {
@@ -77,13 +114,13 @@ class DriverSocketService extends BaseService {
           as: 'driver',
           where: {
             id: driver.id,
-            role: User.roles.STORE,
+            role: User.roles.DRIVER,
           },
           attributes: ['id', 'username', 'address', 'phone', 'tel', 'avatar'],
         },
         {
           model: User,
-          as: 'driver',
+          as: 'store',
           attributes: ['id', 'username', 'phone', 'tel', 'avatar'],
         },
         {
@@ -103,6 +140,54 @@ class DriverSocketService extends BaseService {
     }
 
     return order
+  }
+
+  async acceptOrder(orderId) {
+    const driver = this._getCurrentDriver()
+
+    const order = await Order.findByPk(orderId)
+
+    if (order.driverId) {
+      throw new Error(`Заказу #${orderId} уже назначен курьер`)
+    }
+
+    if (order.status != Order.statuses.WHAITING) {
+      throw new Error(`Заказ #${orderId} не найден`)
+    }
+
+    order.driverId = driver.id
+    await order.save()
+
+    const updatedOrder = await this._setNewStatus(
+      order,
+      Order.statuses.ACCEPTED,
+      `Заказ взят в работу`
+    )
+
+    const orderPretendent = await OrderPretendent.findOne({
+      where: {
+        orderId,
+        driverId: driver.id,
+      },
+    })
+
+    if (orderPretendent) {
+      orderPretendent.status = OrderPretendent.statuses.ACCEPTED
+      await orderPretendent.save()
+    } else {
+      await orderPretendent.create({
+        orderId,
+        driverId,
+        status: OrderPretendent.statuses.ACCEPTED,
+      })
+    }
+
+    await this._notifyDrivers(updatedOrder, 'order.accepted', [
+      OrderPretendent.statuses.WHAITING,
+      OrderPretendent.statuses.ACCEPTED,
+    ])
+
+    return updatedOrder
   }
 
   async takedOrder(orderId) {
@@ -188,6 +273,31 @@ class DriverSocketService extends BaseService {
     }
 
     return account
+  }
+
+  async _notifyDrivers(order, eventName, status) {
+    console.log(
+      'Ищу курьеров, связанных с этим заказом и уведомляю о событии: ',
+      eventName
+    )
+    // Ищу курьеров, связанных с этим заказом'
+    const pretendents = await OrderPretendent.findAll({
+      where: {
+        orderId: order.id,
+        status,
+      },
+    })
+
+    console.log('Найдено курьеров: ', pretendents.length)
+
+    for (const index in pretendents) {
+      const pretendent = pretendents[index]
+      console.log('Уведомляю курьера о событии: ', pretendent.driverId)
+      const sockets = this.getUserSockets(pretendent.driverId, '/driver')
+      sockets.forEach((socket) => {
+        socket.emit(eventName, order)
+      })
+    }
   }
 }
 

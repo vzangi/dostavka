@@ -31,6 +31,17 @@ class DriverSocketController extends BaseSocketController {
     }
   }
 
+  async acceptOrder(req, callback) {
+    try {
+      const { orderId } = req
+      const data = await this.service.acceptOrder(orderId)
+      callback({ status: 0, data })
+    } catch (error) {
+      console.log(error)
+      callback({ status: 1, msg: error.message })
+    }
+  }
+
   async cancelOrder(req, callback) {
     try {
       const { orderId, reason } = req

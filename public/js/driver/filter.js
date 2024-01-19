@@ -59,6 +59,36 @@ $(function () {
     if ($(`tr[data-id=${order.id}]`).length == 1) filter()
   })
 
+  socket.on('orders.new', (order) => {
+    console.log('Новый заказ: ', order)
+    filter()
+  })
+
+  socket.on('order.accepted', (order) => {
+    console.log('Заказ был принят: ', order)
+    filter()
+  })
+
+  socket.on('order.cancelled', (order) => {
+    console.log('Заказ отменён: ', order)
+    filter()
+  })
+
+  socket.on('order.complete', (order) => {
+    console.log('Заказ выполнен: ', order)
+    filter()
+  })
+
+  socket.on('order.taked.cancelled', (order) => {
+    console.log('Заказ который вы взяли отменён: ', order)
+    filter()
+  })
+
+  socket.on('order.revert', (order) => {
+    console.log('Администратор убрал вас из заказа: ', order)
+    filter()
+  })
+
   // Скрыть/показать фильтр
   filterBtn.click(function () {
     filterBox.slideToggle()
