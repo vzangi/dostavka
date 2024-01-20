@@ -12,7 +12,7 @@ script(id="orderTmpl" type="text/x-jquery-tmpl")
           {{/if}}
         . 
           {{if status == 2}}
-        button(class="btn btn-sm btn-danger" title="Отказаться от заказа" data-bs-toggle="tooltip" data-bs-placement="top") 
+        button(class="btn btn-sm btn-danger refuse-order" title="Отказаться от заказа" data-bs-toggle="tooltip" data-bs-placement="top" data-id="${id}") 
           i(class="bi bi-x-square")
         //- button(class="btn btn-sm btn-primary" title="Забрал заказ из магазина" data-bs-toggle="tooltip" data-bs-placement="top") 
           i(class="bi bi-file-play-fill")
@@ -20,9 +20,9 @@ script(id="orderTmpl" type="text/x-jquery-tmpl")
           {{/if}}
         . 
           {{if status == 3}}
-        button(class="btn btn-sm btn-warning" title="Вернуть заказ" data-bs-toggle="tooltip" data-bs-placement="top") 
+        button(class="btn btn-sm btn-warning" title="Вернуть заказ" data-bs-toggle="tooltip" data-bs-placement="top" data-id="${id}") 
           i(class="bi bi-skip-backward-btn")
-        button(class="btn btn-sm btn-success" title="Заказ доставлен" data-bs-toggle="tooltip" data-bs-placement="top") 
+        button(class="btn btn-sm btn-success complete-order" title="Заказ доставлен" data-bs-toggle="tooltip" data-bs-placement="top" data-id="${id}") 
           i(class="bi bi-check-square")
         . 
           {{/if}}

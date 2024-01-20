@@ -4,13 +4,13 @@ const BaseController = require('../BaseController')
 class DriverController extends BaseController {
 	async main(req, res) {
 		try {
-			const data = await this.service.main()
+			const { currentAccount } = res.locals
+			const data = await this.service.main(currentAccount)
 			res.render('page/driver/main', data)
 		} catch (error) {
-			this.service.page404(res)
+			this.page404(res)
 		}
 	}
-
 }
 
 module.exports = new DriverController(Service)

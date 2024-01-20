@@ -33,7 +33,11 @@ module.exports = (app) => {
 
 	// Глобальный обработчик ошибок
 	app.use((err, req, res, next) => {
-		console.error(err)
+		console.error(
+			new Date().toGMTString(),
+			'[Глобальный обработчик ошибок]: ',
+			err.message
+		)
 		res.status(404).render('page/404')
 	})
 }
