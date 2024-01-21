@@ -5,6 +5,9 @@ const BaseUserService = require('../../BaseUserService')
 const saltNumber = 10
 
 class AdminDriverService extends BaseUserService {
+	/**
+	 * Данные для страницы списка курьеров
+	 */
 	async main() {
 		const drivers = await Driver.findAll({
 			where: {
@@ -28,6 +31,9 @@ class AdminDriverService extends BaseUserService {
 		return data
 	}
 
+	/**
+	 * Данные для формы добавления курьера
+	 */
 	async addDriverFormData() {
 		const cities = await City.findAll()
 		const data = {
@@ -36,6 +42,9 @@ class AdminDriverService extends BaseUserService {
 		return data
 	}
 
+	/**
+	 * Процедура добавления курьера
+	 */
 	async addDriver(driverData) {
 		const { username, login, pass, phone, cityId, address, wallet } = driverData
 
@@ -57,16 +66,16 @@ class AdminDriverService extends BaseUserService {
 		driverData.password = await hash(pass, saltNumber)
 		delete driverData.pass
 
-		const data = {
-			role: Driver.roles.DRIVER,
-			...driverData,
-		}
+		driverData.role = Driver.roles.DRIVER
 
-		const driver = await Driver.create(data)
+		const driver = await Driver.create(driverData)
 
 		return driver
 	}
 
+	/**
+	 * Данные для формы редактирования курьера
+	 */
 	async editDriverFormData(id) {
 		if (!id) {
 			throw new Error('Нет необходимых данных')
@@ -88,6 +97,9 @@ class AdminDriverService extends BaseUserService {
 		return data
 	}
 
+	/**
+	 * Процедура редактирования курьера
+	 */
 	async editDriver(driverData) {
 		const { id, username, login, pass, phone, cityId, address, wallet } =
 			driverData
@@ -120,6 +132,9 @@ class AdminDriverService extends BaseUserService {
 		return driver
 	}
 
+	/**
+	 * Процедура удаления курьера
+	 */
 	async removeDriver(id) {
 		if (!id) {
 			throw new Error('Нет необходимых данных')
@@ -131,8 +146,10 @@ class AdminDriverService extends BaseUserService {
 			throw new Error('Курьер не найден')
 		}
 
+		// Удаляю аватар
 		await this.removeAvatar(driver)
 
+		// Удаляю пользователя
 		await driver.destroy()
 	}
 }

@@ -1,159 +1,49 @@
-const BaseService = require('../../../BaseService')
+const htmlspecialchars = require('htmlspecialchars')
+const { Op } = require('sequelize')
+const { isoDateFromString } = require('../../../../unit/dateHelper')
+const OrderManager = require('../../../../unit/OrderManager')
 const Order = require('../../../../models/Order')
 const User = require('../../../../models/User')
 const City = require('../../../../models/City')
-const OrderStatus = require('../../../../models/OrderStatus')
 const OrderPretendent = require('../../../../models/OrderPretendent')
-const { Op } = require('sequelize')
-const { isoDateFromString } = require('../../../../unit/dateHelper')
-const htmlspecialchars = require('htmlspecialchars')
-const OrderManager = require('../../../../unit/OrderManager')
+const UserSocketService = require('../../../UserSocketService')
+const deliveryPrice = 4
 
-class AdminOrderService extends BaseService {
-	async createOrder(orderData) {
-		const {
-			clientPhone,
-			summ,
-			storeId,
-			address,
-			latitude,
-			longitude,
-			comment,
-		} = orderData
+class AdminOrderService extends UserSocketService {
+	/**
+	 * Получение данных заказа по номеру
+	 */
+	async getOrder(orderId) {
+		const order = await this._getOrderById(orderId)
 
-		if (!clientPhone || !storeId || !address) {
-			throw new Error('Нет необходимых данных')
-		}
-
-		if (latitude == '') {
-			delete orderData.latitude
-		}
-
-		if (longitude == '') {
-			delete orderData.longitude
-		}
-
-		const store = await User.findByPk(storeId)
-
-		if (!store) {
-			throw new Error('Магазин не найден')
-		}
-
-		if (store.role != User.roles.STORE) {
-			throw new Error('Магазин не найден')
-		}
-
-		if (!store.active) {
-			throw new Error('Магазин заблокирован')
-		}
-
-		orderData.cityId = store.cityId
-
-		const order = await Order.create(orderData)
-
-		let createComment = `Заказ создан администратором`
-		createComment += `<br>Телефон: <b>${clientPhone}</b>`
-		createComment += `<br>Адрес: <b>${address}</b>`
-		if (summ) {
-			createComment += `<br>Сумма: <b>${summ}</b>`
-		}
-		if (comment) {
-			createComment += `<br>Комментарий: <b>${comment}</b>`
-		}
-
-		await OrderStatus.create({
-			orderId: order.id,
-			userId: this.account.id,
-			comment: createComment,
-		})
-
-		// Отправляю заказ в менеджер
-		await OrderManager.startFounding(order)
-
-		this.io.of('/admin').emit('order.created', order)
-
-		const storeSockets = this.getUserSockets(storeId, '/store')
-		storeSockets.forEach((storeSocket) => {
-			storeSocket.emit('order.created', order)
-		})
-
-		return order
-	}
-
-	async updateOrder(orderData) {
-		const { id, clientPhone, summ, address, latitude, longitude, comment } =
-			orderData
-
-		if (!id || !clientPhone || !address) {
-			throw new Error('Нет необходимых данных')
-		}
-
-		if (latitude == '') {
-			delete orderData.latitude
-		}
-
-		if (longitude == '') {
-			delete orderData.longitude
-		}
-
-		const order = await this.getOrderById(id)
-
-		const changes = []
-
-		if (order.clientPhone != clientPhone) {
-			order.clientPhone = clientPhone
-			changes.push(`Изменён номер клиента: <b>${clientPhone}</b>`)
-		}
-
-		if (order.summ != summ) {
-			order.summ = summ
-			changes.push(`Изменена сумма заказа: <b>${summ}</b>`)
-		}
-
-		if (order.address != address) {
-			order.address = address
-			changes.push(`Изменён адрес: <b>${address}</b>`)
-			if (orderData.latitude) order.latitude = orderData.latitude
-			if (orderData.longitude) order.longitude = orderData.longitude
-		}
-
-		if (order.comment != comment) {
-			order.comment = comment
-			changes.push(`Изменён комментарий: <b>${comment}</b>`)
-		}
-
-		if (changes.length > 0) {
-			const changesMessage = changes.join('<br>')
-			const updatedOrder = await this._setNewStatus(
-				order,
-				order.status,
-				changesMessage
-			)
-
-			this.io.of('/admin').emit('order.update', updatedOrder)
-
-			const storeSockets = this.getUserSockets(updatedOrder.storeId, '/store')
-			storeSockets.forEach((storeSocket) => {
-				storeSocket.emit('order.update', updatedOrder)
+		// Если заказ в поиске курьера - включаю в него данные претендентов
+		if (order.status == Order.statuses.WHAITING) {
+			const pretendents = await OrderPretendent.findAll({
+				where: {
+					orderId,
+					status: [
+						OrderPretendent.statuses.WHAITING,
+						OrderPretendent.statuses.CANCELLED,
+					],
+				},
+				include: [
+					{
+						model: User,
+						as: 'driver',
+						attributes: ['id', 'username', 'phone', 'avatar', 'address'],
+					},
+				],
 			})
 
-			// Статусы курьеров связанных с заказом
-			const statuses = [OrderPretendent.statuses.ACCEPTED]
-
-			// Если заказ ещё не взят, то добавляю также ожидающих курьеров
-			if (updatedOrder.status == Order.statuses.WHAITING) {
-				statuses.push(OrderPretendent.statuses.WHAITING)
-			}
-
-			// Уведомляю курьеров об изменении заказа
-			this._notifyDrivers(updatedOrder, 'order.update', statuses)
-
-			return updatedOrder
+			order.dataValues.pretendents = pretendents
 		}
 
 		return order
 	}
 
+	/**
+	 * Получение отфильтрованного списка заказов
+	 */
 	async getOrders(filter) {
 		if (!filter) {
 			throw new Error('Не указан фильтр')
@@ -226,72 +116,15 @@ class AdminOrderService extends BaseService {
 		return orders
 	}
 
-	async getOrderById(orderId) {
-		if (!orderId) {
-			throw new Error('Не указан id заказа')
-		}
-
-		const order = await Order.findByPk(orderId, {
-			include: [
-				{
-					model: City,
-				},
-				{
-					model: User,
-					as: 'store',
-					attributes: ['id', 'username', 'address', 'phone', 'tel', 'avatar'],
-				},
-				{
-					model: User,
-					as: 'driver',
-					attributes: ['id', 'username', 'phone', 'tel', 'avatar'],
-				},
-				{
-					model: OrderStatus,
-					include: [
-						{
-							model: User,
-							attributes: ['id', 'username'],
-						},
-					],
-				},
-			],
-		})
-
-		if (!order) {
-			throw new Error(`Заказ #${orderId} не найден`)
-		}
-
-		if (order.status == Order.statuses.WHAITING) {
-			const pretendents = await OrderPretendent.findAll({
-				where: {
-					orderId,
-					status: [
-						OrderPretendent.statuses.WHAITING,
-						OrderPretendent.statuses.CANCELLED,
-					],
-				},
-				include: [
-					{
-						model: User,
-						as: 'driver',
-						attributes: ['id', 'username', 'phone', 'avatar', 'address'],
-					},
-				],
-			})
-
-			order.dataValues.pretendents = pretendents
-		}
-
-		return order
-	}
-
+	/**
+	 * Назначение курьера для заказа вручную
+	 */
 	async setDriver(orderId, driverId) {
 		if (!driverId) {
 			throw new Error('Не указан id курьера')
 		}
 
-		const order = await this.getOrderById(orderId)
+		const order = await this.getOrder(orderId)
 
 		if (order.driverId) {
 			throw new Error(`Заказу #${orderId} уже назначен курьер`)
@@ -327,14 +160,17 @@ class AdminOrderService extends BaseService {
 			throw new Error(`Курьер #${driver.username} в данный момент не работает`)
 		}
 
+		// Назначаю курьера на заказ
 		order.driverId = driverId
 
+		// Обновляю статус
 		const updatedOrder = await this._setNewStatus(
 			order,
 			Order.statuses.ACCEPTED,
 			`Администратор назначил курьера вручную - ${driver.username}`
 		)
 
+		// Ищу курьера среди претендентов на заказ
 		const orderPretendent = await OrderPretendent.findOne({
 			where: {
 				orderId,
@@ -342,10 +178,13 @@ class AdminOrderService extends BaseService {
 			},
 		})
 
+		// Если курьер найден
 		if (orderPretendent) {
+			// Обновляю статус на "Взял заказ"
 			orderPretendent.status = OrderPretendent.statuses.ACCEPTED
 			await orderPretendent.save()
 		} else {
+			// Если нет - создаю в базе новую запись
 			OrderPretendent.create({
 				orderId,
 				driverId,
@@ -353,16 +192,19 @@ class AdminOrderService extends BaseService {
 			})
 		}
 
+		// Уведомляю курьеров об изменении статуса заказа
 		await this._notifyDrivers(updatedOrder, 'order.accepted', [
 			OrderPretendent.statuses.WHAITING,
-			OrderPretendent.statuses.ACCEPTED,
 		])
 
 		return updatedOrder
 	}
 
+	/**
+	 * Снять курьера с заказа вручную
+	 */
 	async revertDriver(orderId, driverId) {
-		const order = await this.getOrderById(orderId)
+		const order = await this.getOrder(orderId)
 
 		if (!order.driverId) {
 			throw new Error(`Заказу #${orderId} не был назначен курьер`)
@@ -404,13 +246,17 @@ class AdminOrderService extends BaseService {
 			await pretendent.save()
 		}
 
+		// Запускаю поиск курьера для заказа
 		OrderManager.startFounding(updatedOrder)
 
 		return updatedOrder
 	}
 
+	/**
+	 * Подтверждение, что курьер забрал заказ
+	 */
 	async takedOrder(orderId) {
-		const order = await this.getOrderById(orderId)
+		const order = await this.getOrder(orderId)
 
 		if (order.status != Order.statuses.ACCEPTED) {
 			throw new Error(`Заказ #${orderId} не подтверждён`)
@@ -426,15 +272,14 @@ class AdminOrderService extends BaseService {
 			'Администратор подтвердил, что курьер забрал заказ'
 		)
 
-		await this._notifyDrivers(updatedOrder, 'order.update', [
-			OrderPretendent.statuses.ACCEPTED,
-		])
-
 		return updatedOrder
 	}
 
+	/**
+	 * Отмена заказа
+	 */
 	async cancelOrder(orderId, reason) {
-		const order = await this.getOrderById(orderId)
+		const order = await this.getOrder(orderId)
 
 		if (order.status == Order.statuses.CANCELLED) {
 			throw new Error(`Заказ #${orderId} уже отменён`)
@@ -448,8 +293,10 @@ class AdminOrderService extends BaseService {
 		if (reason)
 			comment = comment + ` по причине: <b>${htmlspecialchars(reason)}</b>`
 
+		// Статус который был до отмены
 		const oldStatus = order.status
 
+		// Обновляю статус
 		const updateOrder = await this._setNewStatus(
 			order,
 			Order.statuses.CANCELLED,
@@ -460,44 +307,51 @@ class AdminOrderService extends BaseService {
 		if (oldStatus == Order.statuses.WHAITING) {
 			// То надо уведомить всех курьеров,
 			// которым было отправлено приглашение,
-			// что заказ изменил статус
+			// что заказ отменён
 
 			await this._notifyDrivers(updateOrder, 'order.cancelled', [
 				OrderPretendent.statuses.WHAITING,
-				OrderPretendent.statuses.ACCEPTED,
-			])
-		} else {
-			// Уведомляю водителя, что его заказ отменился
-			await this._notifyDrivers(updateOrder, 'order.taked.cancelled', [
-				OrderPretendent.statuses.ACCEPTED,
 			])
 		}
 
 		return updateOrder
 	}
 
+	/**
+	 * Выполнить заказ
+	 */
 	async completeOrder(orderId) {
-		const order = await this.getOrderById(orderId)
+		const order = await this.getOrder(orderId)
 
 		if (order.status == Order.statuses.DELIVERED) {
 			throw new Error(`Заказ #${orderId} уже завершён`)
 		}
 
+		// Обновляю статус заказа
 		const updatedOrder = await this._setNewStatus(
 			order,
 			Order.statuses.DELIVERED,
 			'Администратор подтвердил выполнение заказа'
 		)
 
-		await this._notifyDrivers(updatedOrder, 'order.complete', [
+		const driver = await User.findByPk(order.driverId)
+
+		// Списываю у курьера плату за заказ
+		driver.wallet -= deliveryPrice
+		await driver.save()
+
+		this._notifyDrivers(updatedOrder, 'order.complete', [
 			OrderPretendent.statuses.ACCEPTED,
 		])
 
 		return updatedOrder
 	}
 
+	/**
+	 * Вернуть заказ в работу
+	 */
 	async rebootOrder(orderId) {
-		const order = await this.getOrderById(orderId)
+		const order = await this.getOrder(orderId)
 
 		if (
 			order.status != Order.statuses.CANCELLED &&
@@ -506,65 +360,32 @@ class AdminOrderService extends BaseService {
 			throw new Error(`Заказ #${orderId} всё ещё в работе`)
 		}
 
+		// Статус заказа в зависимости от наличия в нем курьера
 		const orderStatus = order.driverId
 			? Order.statuses.ACCEPTED
 			: Order.statuses.WHAITING
 
-		return await this._setNewStatus(
+		const updatedOrder = await this._setNewStatus(
 			order,
 			orderStatus,
 			'Администратор вернул заказ в работу'
 		)
-	}
 
-	async _setNewStatus(order, status, comment) {
-		const { account, io } = this
+		// Если заказ в ожидании
+		if (orderStatus == Order.statuses.WHAITING) {
+			// Удаляю ранее отправленные предложения взять заказ
+			await OrderPretendent.destroy({
+				where: {
+					orderId: updatedOrder.id,
+					status: OrderPretendent.statuses.WHAITING,
+				},
+			})
 
-		order.status = status
-		await order.save()
-
-		await OrderStatus.create({
-			status,
-			orderId: order.id,
-			userId: account.id,
-			comment,
-		})
-
-		const updatedOrder = await this.getOrderById(order.id)
-
-		io.of('/admin').emit('order.update', updatedOrder)
-
-		const storeSockets = this.getUserSockets(order.storeId, '/store')
-		storeSockets.forEach((storeSocket) => {
-			storeSocket.emit('order.update', updatedOrder)
-		})
+			// Запускаю поиск курьера для заказа
+			OrderManager.startFounding(updatedOrder)
+		}
 
 		return updatedOrder
-	}
-
-	async _notifyDrivers(order, eventName, status) {
-		console.log(
-			'Ищу курьеров, связанных с этим заказом и уведомляю о событии: ',
-			eventName
-		)
-		// Ищу курьеров, связанных с этим заказом'
-		const pretendents = await OrderPretendent.findAll({
-			where: {
-				orderId: order.id,
-				status,
-			},
-		})
-
-		console.log('Найдено курьеров: ', pretendents.length)
-
-		for (const index in pretendents) {
-			const pretendent = pretendents[index]
-			console.log('Уведомляю курьера о событии: ', pretendent.driverId)
-			const sockets = this.getUserSockets(pretendent.driverId, '/driver')
-			sockets.forEach((socket) => {
-				socket.emit(eventName, order)
-			})
-		}
 	}
 }
 

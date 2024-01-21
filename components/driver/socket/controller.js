@@ -2,6 +2,9 @@ const BaseSocketController = require('../../BaseSocketController')
 const Service = require('./service')
 
 class DriverSocketController extends BaseSocketController {
+	/**
+	 * Получение отфильтрованного списка заказов
+	 */
 	async getOrders(filter, callback) {
 		try {
 			const data = await this.service.getOrders(filter)
@@ -12,6 +15,9 @@ class DriverSocketController extends BaseSocketController {
 		}
 	}
 
+	/**
+	 * Получение заказа по номеру
+	 */
 	async getOrderById(req, callback) {
 		try {
 			const { orderId } = req
@@ -23,6 +29,9 @@ class DriverSocketController extends BaseSocketController {
 		}
 	}
 
+	/**
+	 * Подтвердить, что заказ был забран из магазина
+	 */
 	async takedOrder(req, callback) {
 		try {
 			const { orderId } = req
@@ -34,6 +43,9 @@ class DriverSocketController extends BaseSocketController {
 		}
 	}
 
+	/**
+	 * Взять заказ в работу
+	 */
 	async acceptOrder(req, callback) {
 		try {
 			const { orderId } = req
@@ -45,17 +57,9 @@ class DriverSocketController extends BaseSocketController {
 		}
 	}
 
-	async cancelOrder(req, callback) {
-		try {
-			const { orderId, reason } = req
-			const data = await this.service.cancelOrder(orderId, reason)
-			callback({ status: 0, data })
-		} catch (error) {
-			console.log(error)
-			callback({ status: 1, msg: error.message })
-		}
-	}
-
+	/**
+	 * Отказаться от заказа
+	 */
 	async refuseOrder(req, callback) {
 		try {
 			const { orderId, reason } = req
@@ -67,6 +71,9 @@ class DriverSocketController extends BaseSocketController {
 		}
 	}
 
+	/**
+	 * Вернуть заказ в магазин
+	 */
 	async revertOrder(req, callback) {
 		try {
 			const { orderId, reason } = req
@@ -78,6 +85,9 @@ class DriverSocketController extends BaseSocketController {
 		}
 	}
 
+	/**
+	 * Выполнить заказ
+	 */
 	async completeOrder(req, callback) {
 		try {
 			const { orderId } = req
@@ -89,6 +99,9 @@ class DriverSocketController extends BaseSocketController {
 		}
 	}
 
+	/**
+	 * Получить баланс
+	 */
 	async getWallet(callback) {
 		try {
 			const data = await this.service.getWallet()

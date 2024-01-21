@@ -2,6 +2,9 @@ const Service = require('./service')
 const BaseController = require('../BaseController')
 
 class MainController extends BaseController {
+	/**
+	 * Главная страница
+	 */
 	async main(req, res) {
 		try {
 			const data = await this.service.main()
@@ -11,6 +14,9 @@ class MainController extends BaseController {
 		}
 	}
 
+	/**
+	 * Страница контактов
+	 */
 	async contacts(req, res) {
 		try {
 			const data = await this.service.contacts()

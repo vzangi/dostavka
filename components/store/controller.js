@@ -2,6 +2,9 @@ const Service = require('./service')
 const BaseController = require('../BaseController')
 
 class StoreController extends BaseController {
+	/**
+	 * Страница управления заказами магазина
+	 */
 	async main(req, res) {
 		try {
 			const { currentAccount } = res.locals

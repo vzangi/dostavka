@@ -40,6 +40,7 @@ require('./routing')(app)
 // Загрузка роутов сокетов
 require('./socketRouting')(io)
 
+// Запуск менеджера заказов
 const OrderManager = require('./OrderManager')
 OrderManager.loadWaitingOrders(io)
 

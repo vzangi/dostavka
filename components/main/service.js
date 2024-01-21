@@ -1,7 +1,14 @@
 class MainService {
+	/**
+	 * Данные для главной страницы сайта
+	 */
 	async main() {
 		return {}
 	}
+
+	/**
+	 * Данные для страницы контактов
+	 */
 	async contacts() {
 		return {
 			phone: '+79618238583',

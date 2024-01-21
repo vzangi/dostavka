@@ -2,26 +2,9 @@ const BaseSocketController = require('../../BaseSocketController')
 const Service = require('./service')
 
 class StoreSocketController extends BaseSocketController {
-	async createOrder(orderData, callback) {
-		try {
-			const data = await this.service.createOrder(orderData)
-			callback({ status: 0, data })
-		} catch (error) {
-			console.log(error)
-			callback({ status: 1, msg: error.message })
-		}
-	}
-
-	async updateOrder(orderData, callback) {
-		try {
-			const data = await this.service.updateOrder(orderData)
-			callback({ status: 0, data })
-		} catch (error) {
-			console.log(error)
-			callback({ status: 1, msg: error.message })
-		}
-	}
-
+	/**
+	 * Получение списка отфильтрованных заказов
+	 */
 	async getOrders(filter, callback) {
 		try {
 			const data = await this.service.getOrders(filter)
@@ -32,10 +15,13 @@ class StoreSocketController extends BaseSocketController {
 		}
 	}
 
-	async getOrderById(req, callback) {
+	/**
+	 * Получение заказа по номеру
+	 */
+	async getOrder(req, callback) {
 		try {
 			const { orderId } = req
-			const data = await this.service.getOrderById(orderId)
+			const data = await this.service.getOrder(orderId)
 			callback({ status: 0, data })
 		} catch (error) {
 			console.log(error)
@@ -43,6 +29,35 @@ class StoreSocketController extends BaseSocketController {
 		}
 	}
 
+	/**
+	 * Создание заказа
+	 */
+	async createOrder(orderData, callback) {
+		try {
+			const data = await this.service.createOrder(orderData)
+			callback({ status: 0, data })
+		} catch (error) {
+			console.log(error)
+			callback({ status: 1, msg: error.message })
+		}
+	}
+
+	/**
+	 * Изменение заказа
+	 */
+	async updateOrder(orderData, callback) {
+		try {
+			const data = await this.service.updateOrder(orderData)
+			callback({ status: 0, data })
+		} catch (error) {
+			console.log(error)
+			callback({ status: 1, msg: error.message })
+		}
+	}
+
+	/**
+	 * Установка статуса указывающего, что курьер забрал заказ
+	 */
 	async takedOrder(req, callback) {
 		try {
 			const { orderId } = req
@@ -54,6 +69,9 @@ class StoreSocketController extends BaseSocketController {
 		}
 	}
 
+	/**
+	 * Отмена заказа с указанием причины
+	 */
 	async cancelOrder(req, callback) {
 		try {
 			const { orderId, reason } = req

@@ -1,86 +1,103 @@
 const City = require('../../../models/City')
 
 class AdminCityService {
-  async main() {
-    const cities = await City.findAll({
-      order: [['id', 'desc']],
-    })
+	/**
+	 * Данные для страницы со списком городов
+	 */
+	async main() {
+		const cities = await City.findAll({
+			order: [['id', 'desc']],
+		})
 
-    const data = {
-      cities,
-    }
+		const data = {
+			cities,
+		}
 
-    return data
-  }
+		return data
+	}
 
-  async addCityFormData() {
-    const data = {}
-    return data
-  }
+	/**
+	 * Данные для формы добавления города
+	 */
+	async addCityFormData() {
+		const data = {}
+		return data
+	}
 
-  async addCity(cityData) {
-    const { name } = cityData
+	/**
+	 * Процедура добавления города
+	 */
+	async addCity(cityData) {
+		const { name } = cityData
 
-    if (!name) {
-      throw new Error('Нет необходимых данных')
-    }
+		if (!name) {
+			throw new Error('Нет необходимых данных')
+		}
 
-    const data = {
-      name,
-    }
+		const data = {
+			name,
+		}
 
-    await City.create(data)
-  }
+		await City.create(data)
+	}
 
-  async editCityFormData(id) {
-    if (!id) {
-      throw new Error('Нет необходимых данных')
-    }
+	/**
+	 * Данные для формы редактирования города
+	 */
+	async editCityFormData(id) {
+		if (!id) {
+			throw new Error('Нет необходимых данных')
+		}
 
-    const city = await City.findByPk(id)
+		const city = await City.findByPk(id)
 
-    if (!city) {
-      throw new Error('Город не найден')
-    }
+		if (!city) {
+			throw new Error('Город не найден')
+		}
 
-    const data = {
-      city,
-    }
+		const data = {
+			city,
+		}
 
-    return data
-  }
+		return data
+	}
 
-  async editCity(cityData) {
-    const { id, name } = cityData
+	/**
+	 * Процедура редактирования города
+	 */
+	async editCity(cityData) {
+		const { id, name } = cityData
 
-    if (!name || !id) {
-      throw new Error('Нет необходимых данных')
-    }
+		if (!name || !id) {
+			throw new Error('Нет необходимых данных')
+		}
 
-    const city = await City.findByPk(id)
+		const city = await City.findByPk(id)
 
-    if (!city) {
-      throw new Error('Город не найден')
-    }
+		if (!city) {
+			throw new Error('Город не найден')
+		}
 
-    city.name = name
+		city.name = name
+		await city.save()
+	}
 
-    await city.save()
-  }
+	/**
+	 * Удаление города
+	 */
+	async removeCity(id) {
+		if (!id) {
+			throw new Error('Нет необходимых данных')
+		}
 
-  async removeCity(id) {
-    if (!id) {
-      throw new Error('Нет необходимых данных')
-    }
+		const city = await City.findByPk(id)
 
-    const city = await City.findByPk(id)
+		if (!city) {
+			throw new Error('Город не найден')
+		}
 
-    if (!city) {
-      throw new Error('Город не найден')
-    }
-
-    await city.destroy()
-  }
+		await city.destroy()
+	}
 }
 
 module.exports = AdminCityService

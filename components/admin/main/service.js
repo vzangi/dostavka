@@ -1,5 +1,3 @@
-class AdminService {
-
-}
+class AdminService {}
 
 module.exports = AdminService

@@ -57,27 +57,26 @@ $(function () {
 
 	// Произошло обновление заказа
 	socket.on('order.update', (order) => {
-		// Если в таблице есть этот заказ - перезапускаем фильтр
-		if ($(`tr[data-id=${order.id}]`).length == 1) filter()
+		// перезапускаю фильтр
+		filter()
 	})
 
 	socket.on('orders.new', (order) => {
-		console.log('Новый заказ: ', order)
+		// console.log('Новый заказ: ', order)
 		filter()
 	})
 
 	socket.on('order.accepted', (order) => {
-		console.log('Заказ был принят: ', order)
+		// console.log('Заказ был принят другим исполниетелем: ', order)
 		filter()
 	})
 
 	socket.on('order.cancelled', (order) => {
-		console.log('Заказ отменён: ', order)
-		filter()
+		// alert('Заказ который вы взяли отменён: ', order.id)
 	})
 
 	socket.on('order.complete', (order) => {
-		console.log('Заказ выполнен: ', order)
+		// console.log('Заказ выполнен: ', order)
 		updateWallet()
 		filter()
 	})
@@ -99,23 +98,18 @@ $(function () {
 		})
 	}
 
-	socket.on('order.taked', (order) => {
-		console.log('Вы забрали заказ: ', order)
-		filter()
-	})
-
 	socket.on('order.taked.cancelled', (order) => {
-		console.log('Заказ который вы взяли отменён: ', order)
+		// console.log('Заказ который вы взяли отменён: ', order)
 		filter()
 	})
 
 	socket.on('order.revert', (order) => {
-		console.log('Администратор убрал вас из заказа: ', order)
+		// console.log('Администратор убрал вас из заказа: ', order)
 		filter()
 	})
 
 	socket.on('order.refused', (order) => {
-		console.log('Вы отказались от заказа: ', order)
+		// console.log('Вы отказались от заказа: ', order)
 		filter()
 	})
 

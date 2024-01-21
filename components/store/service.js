@@ -1,10 +1,10 @@
 const User = require('../../models/User')
 
 class MainService {
+	/**
+	 *  Данные для главной страницы магазина
+	 */
 	async main(account) {
-		if (account.role != User.roles.STORE) {
-			throw new Error('Вход в чужую зону')
-		}
 		const city = await account.getCity()
 		const data = {
 			city,

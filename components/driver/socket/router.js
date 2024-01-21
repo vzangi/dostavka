@@ -4,7 +4,7 @@ module.exports = (io, socket) => {
 	// Список последних заказов
 	socket.on('orders.get', controller.getOrders.bind(controller))
 
-	// Получение заказа по id
+	// Получение заказа по номеру
 	socket.on('orders.getbyid', controller.getOrderById.bind(controller))
 
 	// Взять заказ
