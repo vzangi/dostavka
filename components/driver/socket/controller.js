@@ -67,10 +67,31 @@ class DriverSocketController extends BaseSocketController {
 		}
 	}
 
+	async revertOrder(req, callback) {
+		try {
+			const { orderId, reason } = req
+			const data = await this.service.revertOrder(orderId, reason)
+			callback({ status: 0, data })
+		} catch (error) {
+			console.log(error)
+			callback({ status: 1, msg: error.message })
+		}
+	}
+
 	async completeOrder(req, callback) {
 		try {
 			const { orderId } = req
 			const data = await this.service.completeOrder(orderId)
+			callback({ status: 0, data })
+		} catch (error) {
+			console.log(error)
+			callback({ status: 1, msg: error.message })
+		}
+	}
+
+	async getWallet(callback) {
+		try {
+			const data = await this.service.getWallet()
 			callback({ status: 0, data })
 		} catch (error) {
 			console.log(error)

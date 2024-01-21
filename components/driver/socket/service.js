@@ -8,6 +8,7 @@ const { Op } = require('sequelize')
 const { isoBetweenDates } = require('../../../unit/dateHelper')
 const htmlspecialchars = require('htmlspecialchars')
 const OrderManager = require('../../../unit/OrderManager')
+const deliveryPrice = 4
 
 class DriverSocketService extends BaseService {
 	async getOrders(filter) {
@@ -123,7 +124,7 @@ class DriverSocketService extends BaseService {
 				{
 					model: User,
 					as: 'store',
-					attributes: ['id', 'username', 'phone', 'tel', 'avatar'],
+					attributes: ['id', 'username', 'address', 'phone', 'tel', 'avatar'],
 				},
 				{
 					model: OrderStatus,
@@ -222,7 +223,9 @@ class DriverSocketService extends BaseService {
 		const updatedOrder = await this._setNewStatus(
 			order,
 			Order.statuses.WHAITING,
-			`Курьер отказался от заказа по причине <b>${htmlspecialchars(reason)}</b>`
+			`Курьер отказался от заказа по причине: <b>${htmlspecialchars(
+				reason
+			)}</b>`
 		)
 
 		const pretendent = await OrderPretendent.findOne({
@@ -265,6 +268,41 @@ class DriverSocketService extends BaseService {
 		return updatedOrder
 	}
 
+	async revertOrder(orderId, reason) {
+		const driver = this._getCurrentDriver()
+
+		const order = await Order.findByPk(orderId)
+
+		if (!order) {
+			throw new Error(`Заказ #${orderId} не найден`)
+		}
+
+		if (order.driverId != driver.id) {
+			throw new Error(`Вы не являетесь исполнителем заказа #${orderId}`)
+		}
+
+		if (order.status != Order.statuses.TAKED) {
+			throw new Error(`Нельзя вернуть заказ #${orderId}`)
+		}
+
+		const updatedOrder = await this._setNewStatus(
+			order,
+			Order.statuses.ACCEPTED,
+			`Курьер вернул заказ по причине: <b>${htmlspecialchars(reason)}</b>`
+		)
+
+		await this._notifyDrivers(updatedOrder, 'order.revert', [
+			OrderPretendent.statuses.ACCEPTED,
+		])
+
+		const storeSockets = this.getUserSockets(updatedOrder.storeId, '/store')
+		storeSockets.forEach((socket) => {
+			socket.emit('order.update', updatedOrder)
+		})
+
+		return updatedOrder
+	}
+
 	async completeOrder(orderId) {
 		const driver = this._getCurrentDriver()
 
@@ -290,6 +328,9 @@ class DriverSocketService extends BaseService {
 			Order.statuses.DELIVERED,
 			`Курьер доставил заказ`
 		)
+
+		driver.wallet -= deliveryPrice
+		await driver.save()
 
 		await this._notifyDrivers(updatedOrder, 'order.complete', [
 			OrderPretendent.statuses.ACCEPTED,
@@ -345,6 +386,17 @@ class DriverSocketService extends BaseService {
 		return await this._setNewStatus(order, Order.statuses.CANCELLED, comment)
 	}
 
+	async getWallet() {
+		const driver = this._getCurrentDriver()
+		const walletData = await User.findByPk(driver.id)
+		if (!walletData) {
+			throw new Error('Не удалось получить данные баланса')
+		}
+		return {
+			wallet: walletData.wallet,
+		}
+	}
+
 	async _setNewStatus(order, status, comment) {
 		const { account, io } = this
 
@@ -389,10 +441,6 @@ class DriverSocketService extends BaseService {
 	}
 
 	async _notifyDrivers(order, eventName, status) {
-		console.log(
-			'Ищу курьеров, связанных с этим заказом и уведомляю о событии: ',
-			eventName
-		)
 		// Ищу курьеров, связанных с этим заказом'
 		const pretendents = await OrderPretendent.findAll({
 			where: {
@@ -405,7 +453,6 @@ class DriverSocketService extends BaseService {
 
 		for (const index in pretendents) {
 			const pretendent = pretendents[index]
-			console.log('Уведомляю курьера о событии: ', pretendent.driverId)
 			const sockets = this.getUserSockets(pretendent.driverId, '/driver')
 			sockets.forEach((socket) => {
 				socket.emit(eventName, order)

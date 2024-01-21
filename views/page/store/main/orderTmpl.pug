@@ -5,7 +5,11 @@ script(id="orderTmpl" type="text/x-jquery-tmpl")
     td 
       a(href="tel:${clientPhone}" title="${city.name}<hr>${clientPhone}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true") ${address}
     td 
+      . 
+        {{if summ}}
       span(title="${comment}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true") ${summ}&nbsp;р.
+      . 
+        {{/if}}
     . 
       {{if driver}}
     td 

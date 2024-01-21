@@ -285,7 +285,23 @@ class StoreSocketService extends BaseService {
 		if (reason)
 			comment = comment + ` по причине: <b>${htmlspecialchars(reason)}</b>`
 
-		return await this._setNewStatus(order, Order.statuses.CANCELLED, comment)
+		const updatedOrder = await this._setNewStatus(
+			order,
+			Order.statuses.CANCELLED,
+			comment
+		)
+
+		if (updatedOrder.driverId) {
+			const driverSockets = this.getUserSockets(
+				updatedOrder.driverId,
+				'/driver'
+			)
+			driverSockets.forEach((socket) => {
+				socket.emit('order.cancelled', updatedOrder)
+			})
+		}
+
+		return updatedOrder
 	}
 
 	async _setNewStatus(order, status, comment) {

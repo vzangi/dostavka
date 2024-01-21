@@ -1,0 +1,58 @@
+div(class="modal fade" tabindex="-1" id="orderForm" data-bs-backdrop="static" )
+  div(class="modal-dialog")
+    div(class="modal-content")
+      div(class="modal-header")
+        h5(class="modal-title") 
+          span Заказ #
+          span(class="order-id")
+        span(class="badge-box ms-2")
+
+        button(type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close")
+
+      div(class="modal-body")
+        input(type="hidden" name="id")
+
+        h5 
+          span Клиент 
+          small 
+            a(class="client-phone") 
+
+        div(class="mb-3")
+          div(class="input-group")
+            span(class="input-group-text" title="Адрес доставки" data-bs-toggle="tooltip" data-bs-placement="top") 
+              i(class="bi bi-geo-alt-fill")
+            input(class="form-control" name="delivery-address" placeholder="Адрес доставки..." autocomplete="off")
+
+        h5 
+          span(class="store-name")
+          span &nbsp; 
+          small
+            a(class="store-phone")
+
+        div(class="mb-3")
+          div(class="input-group")
+            span(class="input-group-text" title="Адрес магазина" data-bs-toggle="tooltip" data-bs-placement="top") 
+              i(class="bi bi-geo-alt-fill")
+            input(class="form-control" name="store-address" placeholder="Адрес магазина..." autocomplete="off")
+
+        div(class="mb-3")
+          div(class="input-group")
+            span(class="input-group-text" title="Сумма заказа" data-bs-toggle="tooltip" data-bs-placement="top") 
+              i(class="bi bi-cash-coin")
+            input(class="form-control" name="order-summ" placeholder="Сумма заказа" autocomplete="off" type="number")
+
+        div(class="mb-3")
+          div(class="input-group")
+            span(class="input-group-text" title="Комментарий к заказу" data-bs-toggle="tooltip" data-bs-placement="top") 
+              i(class="bi bi-chat-text-fill")
+            textarea(class="form-control" name="order-comment" placeholder="Комментарий к заказу" autocomplete="off")
+
+        a(href="#" class="btn-show-history") Показать историю измения статусов
+        div(class="order-history")
+
+
+      div(class="modal-footer justify-content-center")
+        button(type="button" class="btn btn-success btn-take-order btn-sm") Взять заказ
+        button(type="button" class="btn btn-danger btn-refuse-order btn-sm") Отказаться
+        button(type="button" class="btn btn-warning btn-revert-order btn-sm") Вернуть
+        button(type="button" class="btn btn-success btn-complete-order btn-sm") Выполнен

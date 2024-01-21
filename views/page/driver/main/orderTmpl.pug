@@ -20,7 +20,7 @@ script(id="orderTmpl" type="text/x-jquery-tmpl")
           {{/if}}
         . 
           {{if status == 3}}
-        button(class="btn btn-sm btn-warning" title="Вернуть заказ" data-bs-toggle="tooltip" data-bs-placement="top" data-id="${id}") 
+        button(class="btn btn-sm btn-warning revert-order" title="Вернуть заказ" data-bs-toggle="tooltip" data-bs-placement="top" data-id="${id}") 
           i(class="bi bi-skip-backward-btn")
         button(class="btn btn-sm btn-success complete-order" title="Заказ доставлен" data-bs-toggle="tooltip" data-bs-placement="top" data-id="${id}") 
           i(class="bi bi-check-square")
@@ -31,7 +31,11 @@ script(id="orderTmpl" type="text/x-jquery-tmpl")
     td 
       a(href="tel:${clientPhone}" title="${clientPhone}<hr>${city.name}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true") ${address}
     td 
+      . 
+        {{if summ}}
       span(title="${comment}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true") ${summ}&nbsp;р.
+      . 
+        {{/if}}
     td 
       span(title="${toDateString(createdAt)}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true") ${coolDate}
 

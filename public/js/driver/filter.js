@@ -20,6 +20,8 @@ $(function () {
 		})
 	}
 
+	$('#date-from').val(today())
+
 	function filter() {
 		const filterData = {}
 
@@ -76,8 +78,26 @@ $(function () {
 
 	socket.on('order.complete', (order) => {
 		console.log('Заказ выполнен: ', order)
+		updateWallet()
 		filter()
 	})
+
+	function updateWallet() {
+		socket.emit('driver.wallet', (res) => {
+			const { status, msg, data } = res
+			if (status != 0) return alert(msg)
+
+			const { wallet } = data
+
+			$('.driver-wallet').text(wallet)
+
+			if (wallet <= 0) {
+				alert(
+					'На вашем балансе не хватает средств! Для продолжения работы пополните счёт'
+				)
+			}
+		})
+	}
 
 	socket.on('order.taked', (order) => {
 		console.log('Вы забрали заказ: ', order)
@@ -138,6 +158,8 @@ $(function () {
 		}, 100)
 		$(this).parent().find('input').val('').focus()
 	})
+
+	$('#date-from').keyup()
 
 	// Выбор даты из календаря
 	$('#date-from').datepicker({
