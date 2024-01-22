@@ -2,13 +2,17 @@ $(function () {
   // Если браузер позволяет определить местоположение
   if ('geolocation' in navigator) {
     const options = {
-      enableHighAccuracy: true,
+      enableHighAccuracy: false,
       timeout: 10000,
       maximumAge: 22000,
     }
 
     // Ставлю наблюдатель за позицией
-    navigator.geolocation.watchPosition(successCallback, errorCallback, options)
+    navigator.geolocation.getCurrentPosition(
+      successCallback,
+      errorCallback,
+      options
+    )
   }
 
   function successCallback(position) {
