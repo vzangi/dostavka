@@ -24,6 +24,8 @@ $(function () {
 
     $('#delivery-address').val(d)
 
+    if (d == 0) return
+
     // Сохраняю текущую позицию
     socket.emit('driver.setposition', { latitude, longitude })
 
