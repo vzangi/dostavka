@@ -3,8 +3,6 @@ $(function () {
   if ('geolocation' in navigator) {
     const options = {
       enableHighAccuracy: false,
-      timeout: 3600,
-      maximumAge: 10000,
     }
 
     setInterval(() => {
