@@ -1,17 +1,13 @@
 $(function () {
   // Если браузер позволяет определить местоположение
   if ('geolocation' in navigator) {
-    const options = {
-      enableHighAccuracy: false,
-    }
-
     setInterval(() => {
       // Ставлю наблюдатель за позицией
-      navigator.geolocation.getCurrentPosition(
-        successCallback,
-        errorCallback,
-        options
-      )
+      navigator.geolocation.getCurrentPosition(successCallback, errorCallback, {
+        enableHighAccuracy: false,
+      })
+
+      $('h2').toggleClass('bg-danger')
     }, 15000)
   }
 
