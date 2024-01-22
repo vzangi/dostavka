@@ -27,8 +27,10 @@ $(function () {
       const cityName = orderAddForm.find(`[name='city-name']`).val()
       const fullAddress = `${cityName}, ${orderData.address}`
       geocoder(fullAddress).then((point) => {
-        orderData.latitude = point.lat
-        orderData.longitude = point.lon
+        if (point) {
+          orderData.latitude = point.lat
+          orderData.longitude = point.lon
+        }
         createOrder(orderData)
       })
     } else {

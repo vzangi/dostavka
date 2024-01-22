@@ -31,8 +31,6 @@ $(function () {
 
     const point = await geocoder(fullAddress)
 
-    console.log(point)
-
     if (!point) return alert('Не удалось получить координаты')
 
     $(`[name='latitude']`).val(point.lat)
