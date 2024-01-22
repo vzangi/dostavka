@@ -68,8 +68,8 @@ $(function () {
   })
 
   socket.on('orders.new', (order) => {
-    // console.log('Новый заказ: ', order)
     filter()
+    playSound()
   })
 
   socket.on('order.accepted', (order) => {
