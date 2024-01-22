@@ -14,22 +14,15 @@ $(function () {
     const { coords } = position
     const { latitude, longitude } = coords
 
-    const d = distance(lat, lon, latitude, longitude)
-    console.log(lat, lon)
-    console.log(latitude, longitude)
-    console.log('d=', d)
+    const d = Math.floor(distance(lat, lon, latitude, longitude) * 1000)
 
     lat = latitude
     lon = longitude
 
-    $('#delivery-address').val(d)
-
-    if (d == 0) return
+    if (d < 10) return
 
     // Сохраняю текущую позицию
     socket.emit('driver.setposition', { latitude, longitude })
-
-    $('h2').toggleClass('bg-danger')
   }
 
   function errorCallback(error) {
