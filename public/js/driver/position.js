@@ -14,7 +14,7 @@ $(function () {
         errorCallback,
         options
       )
-    }, 5000)
+    }, 15000)
   }
 
   function successCallback(position) {
