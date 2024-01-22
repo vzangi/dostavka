@@ -3,8 +3,8 @@ $(function () {
   if ('geolocation' in navigator) {
     const options = {
       enableHighAccuracy: false,
-      timeout: 10000,
-      maximumAge: 22000,
+      timeout: 3600,
+      maximumAge: 1000,
     }
 
     // Ставлю наблюдатель за позицией
