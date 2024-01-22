@@ -1,14 +1,20 @@
 $(function () {
   // Если браузер позволяет определить местоположение
   if ('geolocation' in navigator) {
-    setInterval(() => {
-      // Ставлю наблюдатель за позицией
-      navigator.geolocation.getCurrentPosition(successCallback, errorCallback, {
-        enableHighAccuracy: false,
-      })
+    getPosition()
+  }
 
-      $('h2').toggleClass('bg-danger')
-    }, 15000)
+  function getPosition() {
+    const options = {
+      enableHighAccuracy: false,
+    }
+    navigator.geolocation.getCurrentPosition(
+      successCallback,
+      errorCallback,
+      options
+    )
+
+    setTimeout(getPosition, 5000)
   }
 
   function successCallback(position) {
@@ -16,6 +22,8 @@ $(function () {
     const { latitude, longitude } = coords
     // Сохраняю текущую позицию
     socket.emit('driver.setposition', { latitude, longitude })
+
+    $('.driver-wallet').parent().text(`${latitude};${longitude}`)
   }
 
   function errorCallback(error) {
