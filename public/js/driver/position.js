@@ -4,15 +4,17 @@ $(function () {
     const options = {
       enableHighAccuracy: false,
       timeout: 3600,
-      maximumAge: 1000,
+      maximumAge: 10000,
     }
 
-    // Ставлю наблюдатель за позицией
-    navigator.geolocation.getCurrentPosition(
-      successCallback,
-      errorCallback,
-      options
-    )
+    setInterval(() => {
+      // Ставлю наблюдатель за позицией
+      navigator.geolocation.getCurrentPosition(
+        successCallback,
+        errorCallback,
+        options
+      )
+    }, 5000)
   }
 
   function successCallback(position) {
