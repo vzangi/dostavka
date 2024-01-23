@@ -44,9 +44,13 @@ require('./socketRouting')(io)
 const OrderManager = require('./OrderManager')
 OrderManager.loadWaitingOrders(io)
 
+// Подключение telegram-бота
+const bot = require('./bot')
+
 module.exports = {
 	app,
 	server,
 	io,
 	sequelize,
+	bot,
 }

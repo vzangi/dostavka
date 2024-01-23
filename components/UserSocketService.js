@@ -284,6 +284,24 @@ class UserSocketService extends BaseService {
 
 		return order
 	}
+
+	/**
+	 * Получение ссылки для подключения
+	 * уведомлений в телеграм
+	 */
+	async getTelegramLink() {
+		const { account } = this
+
+		if (!account) {
+			throw new Error('Не авторизован')
+		}
+
+		const botName = process.env.TELEGRAM_BOT_NAME
+
+		const link = `https://t.me/${botName}?start=${account.id}__${account.id}3301`
+
+		return { link }
+	}
 }
 
 module.exports = UserSocketService
