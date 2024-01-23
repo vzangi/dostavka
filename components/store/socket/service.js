@@ -7,6 +7,7 @@ const { Op } = require('sequelize')
 const { isoBetweenDates } = require('../../../unit/dateHelper')
 const htmlspecialchars = require('htmlspecialchars')
 const OrderManager = require('../../../unit/OrderManager')
+const OrderPretendent = require('../../../models/OrderPretendent')
 
 class StoreSocketService extends UserSocketService {
 	/**
@@ -159,7 +160,9 @@ class StoreSocketService extends UserSocketService {
 			comment
 		)
 
+		// Если к заказу был привязан курьер
 		if (updatedOrder.driverId) {
+			// Уведомляю его об отмене
 			const driverSockets = this.getUserSockets(
 				updatedOrder.driverId,
 				'/driver'
@@ -167,6 +170,23 @@ class StoreSocketService extends UserSocketService {
 			driverSockets.forEach((socket) => {
 				socket.emit('order.cancelled', updatedOrder)
 			})
+		} else {
+			// Беру претендентов на заказ
+			const pretendents = await OrderPretendent.findAll({
+				where: {
+					orderId,
+					status: OrderPretendent.statuses.WHAITING,
+				},
+			})
+
+			// Отправляю каждому курьеру уведомление об отмене заказа
+			for (const index in pretendents) {
+				const pretendent = pretendents[index]
+				const sockets = this.getUserSockets(pretendent.driverId, '/driver')
+				sockets.forEach((socket) => {
+					socket.emit('order.cancelled', updatedOrder)
+				})
+			}
 		}
 
 		return updatedOrder
