@@ -23,6 +23,7 @@ $(function () {
 			const { status, msg } = res
 			if (status != 0) return alert(msg)
 			if (success) success()
+			$('.tooltip').remove()
 		})
 	}
 
@@ -45,6 +46,7 @@ $(function () {
 			const { status, msg } = res
 			if (status != 0) return alert(msg)
 			if (success) success()
+			$('.tooltip').remove()
 		})
 	}
 
@@ -66,6 +68,7 @@ $(function () {
 			const { status, msg } = res
 			if (status != 0) return alert(msg)
 			if (success) success()
+			$('.tooltip').remove()
 		})
 	}
 
@@ -88,6 +91,7 @@ $(function () {
 			const { status, msg } = res
 			if (status != 0) return alert(msg)
 			if (success) success()
+			$('.tooltip').remove()
 		})
 	}
 

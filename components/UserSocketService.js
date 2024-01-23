@@ -1,6 +1,6 @@
 const City = require('../models/City')
 const Order = require('../models/Order')
-const OrderPretendednt = require('../models/OrderPretendent')
+const OrderPretendent = require('../models/OrderPretendent')
 const OrderStatus = require('../models/OrderStatus')
 const User = require('../models/User')
 const OrderManager = require('../unit/OrderManager')
@@ -125,7 +125,7 @@ class UserSocketService extends BaseService {
 	 */
 	async _notifyDrivers(order, eventName, status) {
 		// Ищу курьеров, связанных с этим заказом'
-		const pretendents = await OrderPretendednt.findAll({
+		const pretendents = await OrderPretendent.findAll({
 			where: {
 				orderId: order.id,
 				status,
