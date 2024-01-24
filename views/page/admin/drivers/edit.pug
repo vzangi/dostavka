@@ -1,5 +1,8 @@
 extends /layout/whideTreeRows
 
+block head 
+	script(src="https://api-maps.yandex.ru/v3/?apikey=480dcbef-5d2c-46d6-a8e6-4de54f3623ef&lang=ru_RU")
+
 block header 
 	include ../header
 
@@ -84,3 +87,10 @@ block main
 
 			div(class="mb-3")
 				button(class="btn btn-success" type="submit") Редактировать
+
+
+		button(class="btn btn-primary btn-show-map" data-zoom="15" data-latitude=driver.latitude data-longitude=driver.longitude) Отобразить на карте
+		div(id="map" class="text-center w-100" style="min-height: 400px")
+
+block scripts 
+	script(src="/js/admin/drivers/map.js")
