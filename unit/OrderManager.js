@@ -3,6 +3,7 @@ const Order = require('../models/Order')
 const User = require('../models/User')
 const OrderPretendent = require('../models/OrderPretendent')
 const bot = require('./bot')
+const sequelize = require('./db')
 const stage3LoopsCount = 12
 
 class OrderManager {
@@ -48,26 +49,17 @@ class OrderManager {
 
   // Первый этап поиска курьера
   static async stage_1(order) {
-    // console.log('Первый этап для заказа: ', order.id)
-
-    // console.log('Поиск свободного курьера')
-
-    // Пытаюсь найти свободного курьера
-    const pretendents = await OrderManager.findPretendents(order, 1)
+    // Ищу ближайшего претендента
+    const pretendents = await OrderManager.findNearDrivers(order, 1)
 
     // Свободных курьеров нет - перехожу к третьей стадии
     if (pretendents.length == 0) {
-      // console.log('Свободных курьеров нет, перехожу к 3 этапу')
       await OrderManager.stage_3(order)
       return
     }
-    const pretendent = pretendents[0]
 
-    // console.log('Свободный курьер найден: ', pretendent.username)
-
-    await OrderManager.notifyDriver(pretendent, order)
-
-    // console.log('Планирую через 10 секунд запуск второй стадии')
+    // Уведомляю курьера о новом заказе
+    await OrderManager.notifyDriver(pretendents[0], order)
 
     // Планирую через 10 секунд запуск второй стадии поиска
     OrderManager.whaitingOrders[order.id].timeoutId = setTimeout(
@@ -78,20 +70,15 @@ class OrderManager {
 
   // Вторая стадия ищу всех свободных курьеров
   static async stage_2(order) {
-    // console.log('Запуск второй стадии поиска')
-
     // Проверяю, находится ли ещё заказ в статусе WHAITING
     const isWhaiting = await Order.findByPk(order.id)
 
     // Если статус не WHAITING,
     // то убираю заказ из буфера и завершаю обработку
     if (isWhaiting.status != Order.statuses.WHAITING) {
-      // console.log('Заказ уже принят, завершаю обработку')
       OrderManager.removeFromWhaitings(order)
       return
     }
-
-    // console.log('Ищу свободных курьеров')
 
     // Ищу нескольких свободных курьеров
     const pretendents = await OrderManager.findPretendents(order, 10)
@@ -99,21 +86,16 @@ class OrderManager {
     // Если нет свободных курьеров -
     // перехожу к третьей стадии
     if (!pretendents) {
-      // console.log('Свободных курьеров нет. Перехожу к третьей стадии')
       await this.stage_3(order)
       return
     }
 
-    // console.log('Количество найденных свободных курьеров: ', pretendents.length)
-
-    // Прохожусь по свободным курьерам
+    // Прохожусь по свободным курьерам и уведомляю их
     for (const pretendentIndex in pretendents) {
       const pretendent = pretendents[pretendentIndex]
 
       await OrderManager.notifyDriver(pretendent, order)
     }
-
-    // console.log('Планирую запуск третьей стадии через 10 секунд')
 
     // Планирую через 10 секунд запуск третьей стадии поиска
     OrderManager.whaitingOrders[order.id].timeoutId = setTimeout(
@@ -123,11 +105,7 @@ class OrderManager {
   }
 
   static async stage_3(order, loopIndex = 0) {
-    // console.log('Запуск третьей стадии. Номер цикла: ', loopIndex)
-
     if (loopIndex == stage3LoopsCount) {
-      // console.log('Прошло 3 цикла на третьей стадии')
-
       // Прошло более двух минут, а курьер не найден
 
       // Надо уведомить магазин, что заказ можно отменить или подождать ещё
@@ -141,28 +119,21 @@ class OrderManager {
     // Если статус не WHAITING,
     // то убираю заказ из буфера и завершаю обработку
     if (isWhaiting.status != Order.statuses.WHAITING) {
-      // console.log('Заказ был принят, завершаю обработку')
       OrderManager.removeFromWhaitings(order)
       return
     }
 
-    // console.log('Ищу нескольких курьеров, которым ещё не отправлялось приглашение')
-
     // Ищу нескольких курьеров, которым ещё не отправлялось приглашение
     const pretendents = await OrderManager.findPretendents(order, 10, true)
 
-    // console.log('Найдено курьеров: ', pretendents.length)
-
     if (pretendents) {
-      // Прохожусь по  курьерам
+      // Прохожусь по  курьерам и уведомляю их
       for (const pretendentIndex in pretendents) {
         const pretendent = pretendents[pretendentIndex]
 
         await OrderManager.notifyDriver(pretendent, order)
       }
     }
-
-    // console.log('Планирую запуск третьей стадии через 10 секунд')
 
     // Планирую через 10 секунд запуск третьей стадии поиска
     OrderManager.whaitingOrders[order.id].timeoutId = setTimeout(
@@ -276,6 +247,65 @@ class OrderManager {
 
     // Возвращаю претендентов
     return pretendents
+  }
+
+  // Поиск ближайших к магазину курьеров
+  static async findNearDrivers(order, max = 10) {
+    const store = await order.getStore()
+    if (!store) {
+      return []
+    }
+    if (!store.longitude) {
+      return []
+    }
+
+    const lon = store.longitude
+    const lat = store.latitude
+
+    const query = `select id, username,
+    ( 3959 * acos( cos( radians(${lat}) ) * cos( radians( latitude ) ) 
+    * cos( radians( longitude ) - radians(${lon}) ) + sin( radians(${lat}) ) * sin(radians(latitude)) ) ) AS distance 
+    from users 
+    where latitude is not null and role = 1 and online = 1 and wallet > 0 and cityId = ${order.cityId}
+    order by distance 
+    `
+
+    const [drivers, metadata] = await sequelize.query(query)
+
+    const takedDrivers = []
+
+    for (const index in drivers) {
+      const driver = drivers[index]
+
+      const alreadySended = await OrderPretendent.count({
+        where: {
+          orderId: order.id,
+          driverId: driver.id,
+        },
+      })
+
+      if (alreadySended != 0) {
+        continue
+      }
+
+      const ordersCount = await Order.count({
+        where: {
+          driverId: driver.id,
+          status: [Order.statuses.ACCEPTED, Order.statuses.TAKED],
+        },
+      })
+
+      // если он занят другими заказами - пропускаю
+      if (ordersCount != 0) {
+        continue
+      }
+
+      const pretendent = await User.findByPk(driver.id)
+      takedDrivers.push(pretendent)
+      if (takedDrivers.length == max) break
+    }
+
+    return takedDrivers
   }
 
   // Удаление заказа из списка ожидания

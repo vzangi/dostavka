@@ -42,9 +42,10 @@ $(function () {
     $('#orderDataTmpl').tmpl(order).appendTo($('.order-data').empty())
     $('#orderUsersTmpl').tmpl(order).appendTo($('.order-users').empty())
     $('#orderStatusesTmpl').tmpl(order).appendTo($('.order-statuses').empty())
-    $('#orderPretendentsTmpl')
-      .tmpl(order)
-      .appendTo($('.order-pretendents').empty())
+    if (order.status == 1)
+      $('#orderPretendentsTmpl')
+        .tmpl(order)
+        .appendTo($('.order-pretendents').empty())
 
     bsTooltips()
   }
