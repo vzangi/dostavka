@@ -137,7 +137,16 @@ class DriverSocketService extends UserSocketService {
         {
           model: User,
           as: 'store',
-          attributes: ['id', 'username', 'address', 'phone', 'tel', 'avatar'],
+          attributes: [
+            'id',
+            'username',
+            'address',
+            'phone',
+            'tel',
+            'avatar',
+            'latitude',
+            'longitude',
+          ],
         },
         {
           model: OrderStatus,

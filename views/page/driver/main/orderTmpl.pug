@@ -29,7 +29,7 @@ script(id="orderTmpl" type="text/x-jquery-tmpl")
     td 
       a(title="${store.phone}<hr>${store.address}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true") ${store.username}
     td 
-      a(href="tel:${clientPhone}" title="${clientPhone}<hr>${city.name}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true") ${address}
+      a(href="https://yandex.ru/maps/?mode=whatshere&whatshere[point]=${longitude},${latitude}&whatshere[zoom]=17" target="_blank" title="${clientPhone}<hr>${city.name}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true") ${address}
     td 
       . 
         {{if summ}}
