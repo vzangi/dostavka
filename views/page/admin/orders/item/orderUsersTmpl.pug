@@ -4,7 +4,10 @@ script(id="orderUsersTmpl" type="text/x-jquery-tmpl")
 		div(class="user-block store bg-white text-center p-3 rounded shadow") 
 			h6 ${store.username}
 			hr
-			div ${store.address}
+			div 
+				a(href="https://yandex.ru/maps/?mode=whatshere&whatshere[point]=${store.longitude},${store.latitude}&whatshere[zoom]=17" class="me-1" target="_blank")
+					i(class="bi bi-geo-alt-fill")
+				span ${store.address}
 			div 
 				a(href="tel:${store.tel}") ${store.phone}
 
@@ -41,7 +44,10 @@ script(id="orderUsersTmpl" type="text/x-jquery-tmpl")
 		div(class="user-block client bg-white text-center p-3 rounded shadow")
 			h6 Клиент
 			hr
-			div ${address}
+			div 
+				a(href="https://yandex.ru/maps/?mode=whatshere&whatshere[point]=${longitude},${latitude}&whatshere[zoom]=17" class="me-1" target="_blank")
+					i(class="bi bi-geo-alt-fill")
+				span ${address}
 			div
 				a(href="tel:${tel}") ${clientPhone}
 

@@ -177,27 +177,34 @@ $(function () {
   // Отмена заказа
   orderCancelBtn.click(function () {
     const orderId = orderChangeForm.find(`[name='id']`).val()
-    if (!confirm('Вы уверены, что хотите отменить заказ?')) return
-    const reason = prompt('Укажите причину отмены')
-    socket.emit('order.cancel', { orderId, reason }, (res) => {
-      const { status, msg, data } = res
-      if (status != 0) return alert(msg)
+    confirm('Вы уверены, что хотите отменить заказ?').then((accept) => {
+      if (!accept) return
 
-      // Скрываю форму
-      orderChangeForm.modal('hide')
+      prompt('Укажите причину отмены').then((reason) => {
+        socket.emit('order.cancel', { orderId, reason }, (res) => {
+          const { status, msg, data } = res
+          if (status != 0) return alert(msg)
+
+          // Скрываю форму
+          orderChangeForm.modal('hide')
+        })
+      })
     })
   })
 
   // Отметить заказ отданным курьеру
   orderTakeBtn.click(function () {
     const orderId = orderChangeForm.find(`[name='id']`).val()
-    if (!confirm('Отметить, что курьер забрал заказ?')) return
-    socket.emit('order.taked', { orderId }, (res) => {
-      const { status, msg, data } = res
-      if (status != 0) return alert(msg)
+    confirm('Отметить, что курьер забрал заказ?').then((accept) => {
+      if (!accept) return
 
-      // Скрываю форму
-      orderChangeForm.modal('hide')
+      socket.emit('order.taked', { orderId }, (res) => {
+        const { status, msg, data } = res
+        if (status != 0) return alert(msg)
+
+        // Скрываю форму
+        orderChangeForm.modal('hide')
+      })
     })
   })
 })

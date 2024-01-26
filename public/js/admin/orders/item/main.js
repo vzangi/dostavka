@@ -72,42 +72,55 @@ $(function () {
   // Выбор одного из курьеров
   btnDriverChecker.click(function () {
     const { id, name } = $(this).data()
-    if (!confirm(`Назначить курьера ${name} исполнителем заказа?`)) return
-    socket.emit('driver.set', { orderId, driverId: id }, (res) => {
-      if (!callback(res)) return
-      $('#driverAddForm').modal('hide')
+    confirm(`Назначить курьера ${name} исполнителем заказа?`).then((accept) => {
+      if (!accept) return
+      socket.emit('driver.set', { orderId, driverId: id }, (res) => {
+        if (!callback(res)) return
+        $('#driverAddForm').modal('hide')
+      })
     })
   })
 
   // Снять курьера с заказа
   $('.order-users').on('click', '#revert-driver', function () {
-    if (!confirm('Снять курьера с заказа?')) return
-    const driverId = $(this).data().driverid
-    socket.emit('driver.revert', { orderId, driverId }, callback)
+    confirm('Снять курьера с заказа?').then((accept) => {
+      if (!accept) return
+      const driverId = $(this).data().driverid
+      socket.emit('driver.revert', { orderId, driverId }, callback)
+    })
   })
 
   // Отменить заказ
   $('#cancel-order').click(function () {
-    if (!confirm('Отменить заказ?')) return
-    const reason = prompt('Причина отмены заказа')
-    socket.emit('order.cancel', { orderId, reason }, callback)
+    confirm('Отменить заказ?').then((accept) => {
+      if (!accept) return
+      prompt('Причина отмены заказа').then((reason) => {
+        socket.emit('order.cancel', { orderId, reason }, callback)
+      })
+    })
   })
 
   // Вернуть заказ
   $('#reboot-order').click(function () {
-    if (!confirm('Вернуть заказ в работу?')) return
-    socket.emit('order.reboot', { orderId }, callback)
+    confirm('Вернуть заказ в работу?').then((accept) => {
+      if (!accept) return
+      socket.emit('order.reboot', { orderId }, callback)
+    })
   })
 
   // Завершить заказ
   $('#complete-order').click(function () {
-    if (!confirm('Отметить заказ выполненным?')) return
-    socket.emit('order.complete', { orderId }, callback)
+    confirm('Отметить заказ выполненным?').then((accept) => {
+      if (!accept) return
+      socket.emit('order.complete', { orderId }, callback)
+    })
   })
 
   // Курьер забрал заказ
   $('#taked-order').click(function () {
-    if (!confirm('Отметить, что курьер забрал заказ?')) return
-    socket.emit('order.taked', { orderId }, callback)
+    confirm('Отметить, что курьер забрал заказ?').then((accept) => {
+      if (!accept) return
+      socket.emit('order.taked', { orderId }, callback)
+    })
   })
 })

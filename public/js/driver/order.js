@@ -17,13 +17,17 @@ $(function () {
   })
 
   function acceptOrder(orderId, success) {
-    if (!confirm(`Взять заказ №${orderId}?`)) return
+    confirm(`Взять заказ №${orderId}?`).then((accept) => {
+      console.log('in accept')
+      if (!accept) return
+      console.log('accepted')
 
-    socket.emit('order.accept', { orderId }, (res) => {
-      const { status, msg } = res
-      if (status != 0) return alert(msg)
-      if (success) success()
-      $('.tooltip').remove()
+      socket.emit('order.accept', { orderId }, (res) => {
+        const { status, msg } = res
+        if (status != 0) return alert(msg)
+        if (success) success()
+        $('.tooltip').remove()
+      })
     })
   }
 
@@ -39,14 +43,17 @@ $(function () {
   })
 
   function refuseOrder(orderId, success) {
-    if (!confirm(`Отказаться от заказа №${orderId}?`)) return
+    confirm(`Отказаться от заказа №${orderId}?`).then((accept) => {
+      if (!accept) return
 
-    const reason = prompt('Укажите причину отказа')
-    socket.emit('order.refuse', { orderId, reason }, (res) => {
-      const { status, msg } = res
-      if (status != 0) return alert(msg)
-      if (success) success()
-      $('.tooltip').remove()
+      prompt('Укажите причину отказа').then((reason) => {
+        socket.emit('order.refuse', { orderId, reason }, (res) => {
+          const { status, msg } = res
+          if (status != 0) return alert(msg)
+          if (success) success()
+          $('.tooltip').remove()
+        })
+      })
     })
   }
 
@@ -62,13 +69,15 @@ $(function () {
   })
 
   function orderComplete(orderId, success) {
-    if (!confirm(`Заказ №${orderId} доставлен?`)) return
+    confirm(`Заказ №${orderId} доставлен?`).then((accept) => {
+      if (!accept) return
 
-    socket.emit('order.complete', { orderId }, (res) => {
-      const { status, msg } = res
-      if (status != 0) return alert(msg)
-      if (success) success()
-      $('.tooltip').remove()
+      socket.emit('order.complete', { orderId }, (res) => {
+        const { status, msg } = res
+        if (status != 0) return alert(msg)
+        if (success) success()
+        $('.tooltip').remove()
+      })
     })
   }
 
@@ -84,14 +93,17 @@ $(function () {
   })
 
   function revertOrder(orderId) {
-    if (!confirm(`Вернуть заказ №${orderId}?`)) return
+    confirm(`Вернуть заказ №${orderId}?`).then((accept) => {
+      if (!accept) return
 
-    const reason = prompt('Укажите причину возврата')
-    socket.emit('order.rewert', { orderId, reason }, (res) => {
-      const { status, msg } = res
-      if (status != 0) return alert(msg)
-      if (success) success()
-      $('.tooltip').remove()
+      prompt('Укажите причину возврата').then((reason) => {
+        socket.emit('order.rewert', { orderId, reason }, (res) => {
+          const { status, msg } = res
+          if (status != 0) return alert(msg)
+          if (success) success()
+          $('.tooltip').remove()
+        })
+      })
     })
   }
 
