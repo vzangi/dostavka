@@ -1,6 +1,12 @@
 $(function () {
 	const walletInput = $(`input[name='wallet-summ']`)
 	const payBtn = $('.btn-to-pay')
+	const walletCnt = $('.driver-wallet').text() * 1
+
+	if (walletCnt <= 0)
+		alert(
+			'На вашем балансе не хватает средств. Чтобы продолжить получать заказы - пополните его.'
+		)
 
 	payBtn.click(function () {
 		const summ = walletInput.val().trim() * 1
