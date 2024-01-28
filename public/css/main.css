@@ -1,58 +1,63 @@
 :root {
-  --avatar-width: 80px;
+	--avatar-width: 80px;
 }
 
 html,
 body {
-  height: 100%;
-  overflow: auto;
+	height: 100%;
+	overflow: auto;
 }
 
 body {
-  background-image: url(/images/fon.jpeg);
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-attachment: fixed;
+	background-image: url(/images/fon.jpeg);
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-attachment: fixed;
 }
 
 a {
-  text-decoration: none;
+	text-decoration: none;
 }
 
 .btn.def-width {
-  min-width: 200px;
+	min-width: 200px;
 }
 
 .no-underline {
-  text-decoration: none;
+	text-decoration: none;
 }
 
 .user-block {
-  max-width: 200px;
+	max-width: 200px;
 }
 
 .user-block img {
-  width: var(--avatar-width);
-  height: var(--avatar-width);
-  border-radius: var(--avatar-width);
+	width: var(--avatar-width);
+	height: var(--avatar-width);
+	border-radius: var(--avatar-width);
 }
 
 .cp {
-  cursor: pointer;
+	cursor: pointer;
 }
 
 td {
-  vertical-align: middle;
+	vertical-align: middle;
 }
 
 td > i {
-  background-color: yellow;
+	background-color: yellow;
 }
 
 .tooltip hr {
-  margin: 2px 0;
+	margin: 2px 0;
 }
 
 .bolder {
-  font-weight: 500;
+	font-weight: 500;
+}
+
+.orange-head {
+	background-color: #fa3;
+	color: #444;
 }

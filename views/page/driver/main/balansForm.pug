@@ -1,0 +1,20 @@
+div(class="modal fade" tabindex="-1" id="balansForm" data-bs-backdrop="static" )
+  div(class="modal-dialog modal-dialog-centered modal-sm" style="max-width:300px; margin:auto")
+    div(class="modal-content")
+      div(class="modal-header orange-head")
+        h5(class="modal-title") 
+          span Пополнить баланс
+        button(type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close")
+
+      div(class="modal-body")
+        h5 Сумма пополнения 
+
+        div(class="mb-3")
+          div(class="input-group")
+            span(class="input-group-text" title="Сумма пополнения (от 100 до 5000 рублей)" data-bs-toggle="tooltip" data-bs-placement="top") 
+              i(class="bi bi-cash-coin")
+            input(class="form-control form-control-lg" name="wallet-summ" placeholder="Сумма пополнения" autocomplete="off" type="number" value="100" min="100" max="5000")
+
+
+      div(class="modal-footer justify-content-center")
+        button(type="button" class="btn btn-success btn-to-pay") Перейти к оплате
