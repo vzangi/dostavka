@@ -210,7 +210,7 @@ $(function () {
       // Комментарий
       orderForm.find('.order-comment-box').hide()
       if (comment && comment != '') {
-        orderForm.find(`.order-comment`).val(comment)
+        orderForm.find(`.order-comment`).text(comment)
         orderForm.find('.order-comment-box').show()
       }
 
