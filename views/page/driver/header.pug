@@ -9,7 +9,7 @@ header(class="mb-3")
       div(class="text-center") 
         span(title=`${currentAccount.address}<hr>${currentAccount.phone}` data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true")= currentAccount.username
         div
-          a(href='#')
+          a(href='#' class="btn-balans" data-bs-toggle="modal" data-bs-target="#balansForm")
             span Баланс: 
             span(class="driver-wallet")= currentAccount.wallet
             span  р.
