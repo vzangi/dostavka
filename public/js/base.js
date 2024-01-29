@@ -65,3 +65,14 @@ function playSound(sound) {
     }
   }, 10)
 }
+
+$(function () {
+  $('.logout').click(function (event) {
+    event.preventDefault()
+    confirm('Выйти с сайта?').then((accept) => {
+      if (!accept) return
+      location.href = '/logout'
+    })
+    return false
+  })
+})

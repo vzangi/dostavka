@@ -164,28 +164,31 @@ $(function () {
         .appendTo($('.badge-box').empty())
 
       // Заполняю поля формы
-      orderForm.find(`.store-name`).text(store.username)
-      orderForm.find(`[name='store-address']`).val(store.address)
-      orderForm.find(`.store-phone`).text(store.phone)
-      orderForm.find(`.store-phone`).attr('href', `tel:${store.phone}`)
-
       orderForm.find(`.order-id`).text(id)
       orderForm.find(`[name='id']`).val(id)
-      orderForm.find(`.client-phone`).text('')
-      if (data.status != 1) {
-        orderForm.find(`.client-phone`).text(clientPhone)
-        orderForm.find(`.client-phone`).attr('href', `tel:${clientPhone}`)
-      }
-      orderForm.find(`[name='delivery-address']`).val(address)
-      orderForm.find(`[name='order-summ']`).val(summ)
-      orderForm.find(`[name='order-comment']`).val(comment)
 
+      // Адрес клиента/доставки
+      orderForm.find(`.delivery-address`).text(address)
       orderForm
         .find('.client-address-link')
         .attr(
           'href',
           `https://yandex.ru/maps/?mode=whatshere&whatshere[point]=${longitude},${latitude}&whatshere[zoom]=17`
         )
+
+      // Телефон клиента
+      orderForm.find(`.client-phone`).text(clientPhone)
+      orderForm.find(`.client-phone-link`).attr('href', `tel:${clientPhone}`)
+      orderForm.find('.client-phone-box').hide()
+      if (data.status != 1) {
+        orderForm.find('.client-phone-box').show()
+      }
+
+      // Название магазина
+      orderForm.find(`.store-name`).text(store.username)
+
+      // Адрес магазина
+      orderForm.find(`.store-address`).text(store.address)
       orderForm
         .find('.store-address-link')
         .attr(
@@ -193,8 +196,29 @@ $(function () {
           `https://yandex.ru/maps/?mode=whatshere&whatshere[point]=${store.longitude},${store.latitude}&whatshere[zoom]=17`
         )
 
-      // Отображаю историю статусов
+      // Телефон магазина
+      orderForm.find(`.store-phone`).text(store.phone)
+      orderForm.find(`.store-phone-link`).attr('href', `tel:${store.phone}`)
 
+      // Сумма
+      orderForm.find('.order-sum-box').hide()
+      if (summ) {
+        orderForm.find(`.order-summ`).text(summ)
+        orderForm.find('.order-sum-box').show()
+      }
+
+      // Комментарий
+      orderForm.find('.order-comment-box').hide()
+      if (comment && comment != '') {
+        orderForm.find(`.order-comment`).val(comment)
+        orderForm.find('.order-comment-box').show()
+      }
+
+      // Маршрут между магазином и клиентом
+      const routeLink = `https://yandex.ru/maps/?mode=routes&rtext=${store.latitude},${store.longitude}~${latitude},${longitude}&rtt=auto`
+      orderForm.find('.route-link').attr('href', routeLink)
+
+      // Отображаю историю статусов
       orderStatusesTmpl.tmpl(data).appendTo(orderHistoryBox.empty())
       bsTooltips()
       orderHistoryBox.hide()

@@ -12,40 +12,48 @@ div(class="modal fade" tabindex="-1" id="orderForm" data-bs-backdrop="static" )
       div(class="modal-body")
         input(type="hidden" name="id")
 
-        h5 
-          span Клиент 
-          small 
-            a(class="client-phone") 
+
+        h5(class="store-name")
 
         div(class="mb-3")
-          div(class="input-group")
-            a(class="input-group-text client-address-link" title="Адрес доставки" data-bs-toggle="tooltip" data-bs-placement="top" target="_blank") 
-              i(class="bi bi-geo-alt-fill")
-            input(class="form-control" name="delivery-address" placeholder="Адрес доставки..." autocomplete="off")
-
-        h5 
-          span(class="store-name")
-          span &nbsp; 
-          small
-            a(class="store-phone")
+          a(class="store-address-link me-1" title="Адрес магазина" data-bs-toggle="tooltip" data-bs-placement="top" target="_blank") 
+            i(class="bi bi-geo-alt-fill")
+          span(class="store-address")
 
         div(class="mb-3")
-          div(class="input-group")
-            a(class="input-group-text store-address-link" title="Адрес магазина" data-bs-toggle="tooltip" data-bs-placement="top" target="_blank") 
-              i(class="bi bi-geo-alt-fill")
-            input(class="form-control" name="store-address" placeholder="Адрес магазина..." autocomplete="off")
+          a(class="store-phone-link me-1" title="Телефон магазина" data-bs-toggle="tooltip" data-bs-placement="top" target="_blank") 
+            i(class="bi bi-phone-fill")
+          span(class="store-phone")
+
+        div(class="mb-3 order-sum-box")
+          span(class="me-1" title="Сумма заказа" data-bs-toggle="tooltip" data-bs-placement="top" target="_blank") 
+            i(class="bi bi-cash-coin")
+          span 
+            span(class="order-summ")
+            span  руб.
+
+        div(class="mb-3 order-comment-box")
+          span(class="me-1" title="Комментарий к заказу" data-bs-toggle="tooltip" data-bs-placement="top" target="_blank") 
+            i(class="bi bi-chat-text-fill")
+          span(class="order-comment")
+
+
+        div(class="delimiter m-3")
+          a(class="route-link" target="_blank" title="Маршрут" data-bs-toggle="tooltip" data-bs-placement="top" )
+            i(class="bi bi-arrow-down-up")
+
+
+        h5 Адрес доставки
 
         div(class="mb-3")
-          div(class="input-group")
-            span(class="input-group-text" title="Сумма заказа" data-bs-toggle="tooltip" data-bs-placement="top") 
-              i(class="bi bi-cash-coin")
-            input(class="form-control" name="order-summ" placeholder="Сумма заказа" autocomplete="off" type="number")
+          a(class="client-address-link me-1" title="Адрес доставки" data-bs-toggle="tooltip" data-bs-placement="top" target="_blank") 
+            i(class="bi bi-geo-alt-fill")
+          span(class="delivery-address")
 
-        div(class="mb-3")
-          div(class="input-group")
-            span(class="input-group-text" title="Комментарий к заказу" data-bs-toggle="tooltip" data-bs-placement="top") 
-              i(class="bi bi-chat-text-fill")
-            textarea(class="form-control" name="order-comment" placeholder="Комментарий к заказу" autocomplete="off")
+        div(class="mb-3 client-phone-box")
+          a(class="client-phone-link me-1" title="Телефон клиента" data-bs-toggle="tooltip" data-bs-placement="top" target="_blank") 
+            i(class="bi bi-phone-fill")
+          span(class="client-phone")
 
         a(href="#" class="btn-show-history") Показать историю измения статусов
         div(class="order-history")
