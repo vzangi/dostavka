@@ -77,6 +77,19 @@ class AdminOrderController extends BaseController {
       this.page404(res)
     }
   }
+
+  /**
+   * Процедура удаления заказа
+   */
+  async removeOrder(req, res) {
+    try {
+      const { id } = req.params
+      await this.service.removeOrder(id)
+      res.redirect('/admin/orders')
+    } catch (error) {
+      this.page404(res)
+    }
+  }
 }
 
 module.exports = new AdminOrderController(Service)

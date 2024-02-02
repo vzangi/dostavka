@@ -21,6 +21,8 @@ script(id="orderTmpl" type="text/x-jquery-tmpl")
     . 
       {{/if}}
     td
+      a(href="/admin/orders/delete/${id}" class="btn btn-sm btn-danger" title="Удалить заказ")
+        i(class="bi bi-trash3")
 
 script(id="noOrdersTmpl" type="text/x-jquery-tmpl")
   tr(class="no-orders")

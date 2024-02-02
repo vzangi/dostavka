@@ -24,4 +24,7 @@ router.post('/edit', controller.editOrder.bind(controller))
 // Страница управения заказом
 router.get('/:id', controller.getOrder.bind(controller))
 
+// Процедура удаления заказа
+router.get('/delete/:id', controller.removeOrder.bind(controller))
+
 module.exports = router
