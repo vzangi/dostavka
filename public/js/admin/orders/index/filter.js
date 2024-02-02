@@ -27,6 +27,18 @@ $(function () {
   const btnDriverChecker = $('.btn-driver-check')
   const driverFilter = $('#driverFilter')
 
+  if ('localStorage' in window) {
+    if (!localStorage.getItem('statusChecks')) {
+      localStorage.setItem('statusChecks', '[1,2,3]')
+    }
+
+    const selectedChecks = JSON.parse(localStorage.getItem('statusChecks'))
+
+    selectedChecks.forEach((sc) => {
+      $(`.status-checker.status-${sc}`).addClass('checked')
+    })
+  }
+
   // Запуск фильтрации заказов
   function filter() {
     const filterData = {}
@@ -110,6 +122,16 @@ $(function () {
   // Клик на чекере статуса
   statusChecker.click(function () {
     $(this).toggleClass('checked')
+
+    if ('localStorage' in window) {
+      const selectedChecks = $('.status-checker.checked')
+        .map((_, sc) => {
+          return $(sc).data().id
+        })
+        .toArray()
+
+      localStorage.setItem('statusChecks', JSON.stringify(selectedChecks))
+    }
   })
 
   // Клик на кнопке запуск фильтрации
