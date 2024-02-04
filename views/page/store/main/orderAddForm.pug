@@ -14,19 +14,17 @@ div(class="modal fade" tabindex="-1" id="orderAddForm" data-bs-backdrop="static"
           input(type="hidden" name="cityId" value=city.id)
           input(type="hidden" name="city-name" value=city.name)
 
-
-          div(class="mb-3")
-            div(class="input-group")
-              span(class="input-group-text" title="Телефон клиента" data-bs-toggle="tooltip" data-bs-placement="top") 
-                i(class="bi bi-phone")
-              input(class="form-control" name="client-phone" placeholder="Телефон клиента..." autocomplete="off" required="")
-
           div(class="mb-3")
             div(class="input-group")
               span(class="input-group-text" title="Адрес доставки" data-bs-toggle="tooltip" data-bs-placement="top") 
                 i(class="bi bi-geo-alt-fill")
               input(class="form-control" name="delivery-address" placeholder="Адрес доставки..." autocomplete="off" required="")
 
+          div(class="mb-3")
+            div(class="input-group")
+              span(class="input-group-text" title="Телефон клиента" data-bs-toggle="tooltip" data-bs-placement="top") 
+                i(class="bi bi-phone")
+              input(class="form-control" name="client-phone" placeholder="Телефон клиента..." autocomplete="off")
 
           div(class="mb-3")
             div(class="input-group")

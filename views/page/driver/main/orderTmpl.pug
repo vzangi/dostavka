@@ -1,6 +1,6 @@
 script(id="orderTmpl" type="text/x-jquery-tmpl")
   tr(class="status-${status} table-${statuses[status-1].bgColorClass}" data-id="${id}")
-    td
+    td(class="order-id-box")
       a(href="#" class="order-link" data-id="${id}") ${id}
     td
       div(class="d-flex gap-1")
@@ -20,8 +20,6 @@ script(id="orderTmpl" type="text/x-jquery-tmpl")
           {{/if}}
         . 
           {{if status == 3}}
-        button(class="btn btn-sm btn-warning revert-order" title="Вернуть заказ" data-bs-toggle="tooltip" data-bs-placement="top" data-id="${id}") 
-          i(class="bi bi-skip-backward-btn")
         button(class="btn btn-sm btn-success complete-order" title="Заказ доставлен" data-bs-toggle="tooltip" data-bs-placement="top" data-id="${id}") 
           i(class="bi bi-check-square")
         . 

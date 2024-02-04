@@ -1,15 +1,10 @@
 script(id="orderTmpl" type="text/x-jquery-tmpl")
   tr(class="status-${status} table-${statuses[status-1].bgColorClass}" data-id="${id}")
-    td
+    td(class="order-id-box")
       a(href="/store/orders/${id}" class="order-link" data-id="${id}" target="_blank") ${id}
     td 
       a(href="tel:${clientPhone}" title="${city.name}<hr>${clientPhone}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true") ${address}
-    td 
-      . 
-        {{if summ}}
-      span(title="${comment}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true") ${summ}&nbsp;р.
-      . 
-        {{/if}}
+
     . 
       {{if driver}}
     td 
@@ -19,8 +14,19 @@ script(id="orderTmpl" type="text/x-jquery-tmpl")
     td Не&nbsp;назначен
     . 
       {{/if}}
+
+
+
     td 
       span ${statuses[status-1].name}
+
+    td 
+      . 
+        {{if summ}}
+      span(title="${comment}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true") ${summ}&nbsp;р.
+      . 
+        {{/if}}
+
     td 
       span(title="${toDateString(createdAt)}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true") ${coolDate}
     td

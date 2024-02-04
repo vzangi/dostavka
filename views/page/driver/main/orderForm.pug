@@ -16,14 +16,16 @@ div(class="modal fade" tabindex="-1" id="orderForm" data-bs-backdrop="static" )
         h5(class="store-name")
 
         div(class="mb-3")
-          a(class="store-address-link me-1" title="Адрес магазина" data-bs-toggle="tooltip" data-bs-placement="top" target="_blank") 
-            i(class="bi bi-geo-alt-fill")
-          span(class="store-address")
+          a(class="store-address-link" title="Адрес магазина" data-bs-toggle="tooltip" data-bs-placement="top" target="_blank") 
+            span(class="me-1")
+              i(class="bi bi-geo-alt-fill")
+            span(class="store-address text-dark")
 
         div(class="mb-3")
-          a(class="store-phone-link me-1" title="Телефон магазина" data-bs-toggle="tooltip" data-bs-placement="top" target="_blank") 
-            i(class="bi bi-phone-fill")
-          span(class="store-phone")
+          a(class="store-phone-link" title="Телефон магазина" data-bs-toggle="tooltip" data-bs-placement="top" target="_blank") 
+            span(class="me-1")
+              i(class="bi bi-phone-fill")
+            span(class="store-phone text-dark")
 
         div(class="mb-3 order-sum-box")
           span(class="me-1" title="Сумма заказа" data-bs-toggle="tooltip" data-bs-placement="top" target="_blank") 
@@ -40,20 +42,25 @@ div(class="modal fade" tabindex="-1" id="orderForm" data-bs-backdrop="static" )
 
         div(class="delimiter m-3")
           a(class="route-link" target="_blank" title="Маршрут" data-bs-toggle="tooltip" data-bs-placement="top" )
-            i(class="bi bi-arrow-down-up")
+            span(class="d-flex align-items-center")
+              span(class="me-1")
+                i(class="bi bi-arrow-down-up")
+              small(class="text-secondary") маршрут
 
 
         h5 Адрес доставки
 
         div(class="mb-3")
-          a(class="client-address-link me-1" title="Адрес доставки" data-bs-toggle="tooltip" data-bs-placement="top" target="_blank") 
-            i(class="bi bi-geo-alt-fill")
-          span(class="delivery-address")
+          a(class="client-address-link" title="Адрес доставки" data-bs-toggle="tooltip" data-bs-placement="top" target="_blank") 
+            span(class="me-1")
+              i(class="bi bi-geo-alt-fill")
+            span(class="delivery-address text-dark")
 
         div(class="mb-3 client-phone-box")
-          a(class="client-phone-link me-1" title="Телефон клиента" data-bs-toggle="tooltip" data-bs-placement="top" target="_blank") 
-            i(class="bi bi-phone-fill")
-          span(class="client-phone")
+          a(class="client-phone-link" title="Телефон клиента" data-bs-toggle="tooltip" data-bs-placement="top" target="_blank") 
+            span(class="me-1")
+              i(class="bi bi-phone-fill")
+            span(class="client-phone text-dark")
 
         a(href="#" class="btn-show-history") Показать историю измения статусов
         div(class="order-history")

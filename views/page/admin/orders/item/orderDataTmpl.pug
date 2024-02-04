@@ -4,10 +4,13 @@ script(id="orderDataTmpl" type="text/x-jquery-tmpl")
 			h6 
 				small Время поступления заказа: 
 				span ${coolDate}
-
+			.
+				{{if summ != 0}}
 			h6 
 				small Сумма: 
 				span ${summ} p.
+			. 
+				{{/if}}
 
 			. 
 				{{if comment != ''}}
