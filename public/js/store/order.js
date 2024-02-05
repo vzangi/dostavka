@@ -149,7 +149,9 @@ $(function () {
 			orderChangeForm.find(`[name='client-phone']`).val(clientPhone)
 			orderChangeForm.find(`[name='delivery-address']`).val(address)
 			orderChangeForm.find(`[name='delivery-address']`).data().address = address
-			orderChangeForm.find(`[name='order-summ']`).val(summ)
+
+			orderChangeForm.find(`[name='order-summ']`).val('')
+			if (summ != 0) orderChangeForm.find(`[name='order-summ']`).val(summ)
 			orderChangeForm.find(`[name='order-comment']`).val(comment)
 
 			// Отображаю историю статусов

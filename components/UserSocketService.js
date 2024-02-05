@@ -232,10 +232,12 @@ class UserSocketService extends BaseService {
 	 * Изменение данных заказа
 	 */
 	async updateOrder(orderData) {
+		if (orderData.summ == '') orderData.summ = 0
+
 		const { id, clientPhone, summ, address, latitude, longitude, comment } =
 			orderData
 
-		if (!id || !clientPhone || !address) {
+		if (!id || !address) {
 			throw new Error('Нет необходимых данных')
 		}
 
