@@ -8,6 +8,7 @@ const { isoBetweenDates } = require('../../../unit/dateHelper')
 const htmlspecialchars = require('htmlspecialchars')
 const OrderManager = require('../../../unit/OrderManager')
 const OrderPretendent = require('../../../models/OrderPretendent')
+const bot = require('../../../unit/bot')
 
 class StoreSocketService extends UserSocketService {
 	/**
@@ -170,6 +171,15 @@ class StoreSocketService extends UserSocketService {
 			driverSockets.forEach((socket) => {
 				socket.emit('order.cancelled', updatedOrder)
 			})
+
+			// Если курьер привязал тг, то уведомляю его и там
+			const driver = await User.findByPk(updatedOrder.driverId)
+			if (driver && driver.telegramChatId) {
+				let msg = `Заказ №${order.id} отменён ${order.store.username}`
+				if (reason)
+					msg = msg + ` по причине: <b>${htmlspecialchars(reason)}</b>`
+				bot.sendMessage(driver.telegramChatId, msg, { parse_mode: 'HTML' })
+			}
 		} else {
 			// Беру претендентов на заказ
 			const pretendents = await OrderPretendent.findAll({
