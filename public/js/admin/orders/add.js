@@ -29,7 +29,7 @@ $(function () {
     const address = $(`[name='address']`).val()
     const fullAddress = `${city}, ${address}`
 
-    const point = await geocoder(fullAddress)
+    const point = await y_geocoder(fullAddress)
 
     if (!point) return alert('Не удалось получить координаты')
 
